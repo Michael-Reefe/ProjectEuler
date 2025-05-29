@@ -3,8 +3,8 @@ program largest_prime_factor
     ! Setup and declare variables
     implicit none
     ! Need to make sure we can store large enough integers
-    integer, parameter :: iwp    = selected_int_kind(12)
-    integer(iwp)       :: number = 600851475143_iwp
+    integer, parameter :: iwp     = selected_int_kind(12)
+    integer(iwp)       :: ninput  = 600851475143_iwp
 
     print *, '----------------------------------'
     print *, 'Problem 3: Largest Prime Factor   '
@@ -13,7 +13,7 @@ program largest_prime_factor
 
     ! Call the gpf function for the number we want
     ! to know the greatest prime factor of:
-    print *, 'Answer:', gpf(number)
+    print *, 'Answer:', gpf(ninput)
 
 contains
 
@@ -21,7 +21,6 @@ contains
     ! calculate the result
     pure function gpf(number)
 
-        integer, parameter       :: iwp = selected_int_kind(12)
         integer(iwp), intent(in) :: number       ! input
         integer(iwp)             :: gpf          ! output
         integer(iwp)             :: candidate    ! candidate divisor
