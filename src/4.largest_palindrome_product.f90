@@ -42,7 +42,7 @@ contains
     pure logical function ispalindrome(number)
         integer, intent(in) :: number
         integer             :: i, strlen
-        character(1024)     :: strnum, strrev
+        character(20)       :: strnum, strrev
         ! convert the integer number to a string
         write(strnum, '(i0)') number
         strlen = len(strnum)

@@ -25,6 +25,6 @@ $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
 # Clean up
-clean : 
+clean: 
 	rm -f $(BIN_DIR)/*.exe
 
