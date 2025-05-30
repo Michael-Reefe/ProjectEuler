@@ -4,10 +4,11 @@ module utils
     ! make all entities private by default
     private                  
     ! explicitly declare public entities
-    public iwp, minint32, maxint32
+    public iwp, rwp, minint32, maxint32
     public primefactors, gcd, lcm
 
-    integer, parameter :: iwp = selected_int_kind(19)
+    integer, parameter :: iwp = selected_int_kind(12)
+    integer, parameter :: rwp = kind(0d0)
     integer, parameter :: minint32 = -2147483647, maxint32 = 2147483646
 
 contains
@@ -18,6 +19,7 @@ contains
         integer(iwp), intent(in)  :: number          ! input number to factorize
         integer(iwp)              :: nreduced        ! running division result
         integer(iwp)              :: candidate       ! candidate divisor
+        integer(iwp)              :: primelimit      ! upper limit on the candidate
         integer(iwp), allocatable :: primefactors(:) ! output list of prime factors
 
         ! Edge cases 
@@ -26,20 +28,31 @@ contains
             return
         end if 
 
-        if (number == 2) then 
-            allocate(primefactors(1))
-            primefactors(1) = 2
-            return
+        ! Set a running division product
+        nreduced = number
+        ! allocate a 0-sized array
+        allocate(primefactors(0))
+
+        ! remove factors of 2 first
+        if (mod(nreduced, 2) == 0) then
+            primefactors = [2_iwp]
+            do while (mod(nreduced, 2) == 0)
+                nreduced = nreduced / 2
+            end do
         end if
 
         ! We will find the prime factors by trial division, in other words
         ! just checking every number to see if it evenly divides the target.
-        candidate = 2
-        nreduced  = number
-        ! allocate a 0-sized array
-        allocate(primefactors(0))
+        candidate  = 3
+        primelimit = int(sqrt(real(number, rwp)), iwp)
 
-        do while (candidate <= number)
+        do 
+            ! if candidate ever exceeds primelimit, then we know that
+            ! the remaining "nreduced" must be a prime, so we can stop
+            if (candidate >= primelimit) then
+                primefactors = [primefactors, nreduced]
+                exit 
+            end if
             ! once nreduced reaches 1, we can stop the loop
             if (nreduced == 1) exit
             ! see if candidate evenly divides number 
@@ -52,10 +65,13 @@ contains
                 ! but don't increment candidate in case the number
                 ! is multiply divisible by it; just skip to the next
                 ! loop iteration
+                primelimit = int(sqrt(real(nreduced, rwp)), iwp)
                 cycle
             end if
-            ! update the candidate
-            candidate = candidate + 1
+            ! update the candidate -
+            ! we only need to check odd numbers since we already removed
+            ! factors of 2
+            candidate = candidate + 2
         end do
 
     end function primefactors

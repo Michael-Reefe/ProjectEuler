@@ -22,15 +22,19 @@ contains
         integer             :: product      ! product of n1 x n2
 
         ! loop through every possible product of two 3 digit numbers.
+        ! start from the large end since that's more likely to contain
+        ! a large palindrome
         gpp  = 0
         minn = 10**(ndigits-1)
         maxn = 10**ndigits-1
-        do n1=minn,maxn
+        do n1=maxn,minn,-1
             ! for the limits, we use n1 here so we don't double-check
             ! the pairs (n1,n2) and (n2,n1)
-            do n2=n1,maxn
+            do n2=maxn,n1,-1
                 product = n1*n2
-                if (ispalindrome(product) .and. product > gpp) then 
+                ! we only need to check if the product is a palindrome
+                ! if it's larger than the previous palindrom product
+                if (product > gpp .and. ispalindrome(product)) then 
                     gpp = product
                 end if
             end do
