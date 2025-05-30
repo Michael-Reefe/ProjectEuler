@@ -13,7 +13,7 @@ program multiples_of_3_or_5
     ! This can be done with a pretty simple loop and the mod function
     multiple_sum = 0
     do i=0,999
-        if (mod(i, 3) .eq. 0 .or. mod(i, 5) .eq. 0) multiple_sum = multiple_sum + i
+        if (mod(i, 3) == 0 .or. mod(i, 5) == 0) multiple_sum = multiple_sum + i
     end do
 
     ! Output the results

@@ -21,9 +21,9 @@ program even_fibonacci_numbers
         ! get the next fibonacci number
         fib3 = fib1 + fib2
         ! check if we've exceeded the 4 million limit
-        if (fib3 .gt. 4000000) exit
+        if (fib3 > 4000000) exit
         ! if it's even, add it to the sum
-        if (mod(fib3, 2) .eq. 0) fib_sum = fib_sum + fib3
+        if (mod(fib3, 2) == 0) fib_sum = fib_sum + fib3
         ! update variables for the next loop iteration
         fib1 = fib2
         fib2 = fib3

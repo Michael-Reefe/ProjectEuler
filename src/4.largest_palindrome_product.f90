@@ -30,7 +30,7 @@ contains
             ! the pairs (n1,n2) and (n2,n1)
             do n2=n1,maxn
                 product = n1*n2
-                if (ispalindrome(product) .and. product .gt. gpp) then 
+                if (ispalindrome(product) .and. product > gpp) then 
                     gpp = product
                 end if
             end do
@@ -51,7 +51,7 @@ contains
             strrev(strlen-i+1:strlen-i+1) = strnum(i:i)
         end do
         ! check if the number is a palindrome
-        ispalindrome = trim(adjustl(strnum)) .eq. trim(adjustl(strrev))
+        ispalindrome = trim(adjustl(strnum)) == trim(adjustl(strrev))
     end function ispalindrome
 
 end program largest_palindrome_product
