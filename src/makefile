@@ -2,7 +2,7 @@
 
 # Compiler and options
 F90      = gfortran
-F90FLAGS = -O3 -cpp -fPIC
+F90FLAGS = -O3 -cpp -fPIC -fno-realloc-lhs
 
 SRC_DIR=./
 BIN_DIR=../bin
