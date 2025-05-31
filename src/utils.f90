@@ -5,7 +5,8 @@ module utils
     private                  
     ! explicitly declare public entities
     public iwp, rwp, minint32, maxint32
-    public reallocate, &
+    public reallocate,& 
+        primefactorize, &
         sieve_of_eratosthenes, &
         segmented_sieve_step
 
@@ -40,6 +41,91 @@ contains
         call move_alloc(tmp, array)
 
     end subroutine reallocate
+
+
+    ! compute the prime factorization of a number 
+    subroutine primefactorize(number, output)
+
+        integer(iwp), intent(in)               :: number            ! input number to factorize
+        integer(iwp), intent(out), allocatable :: output(:,:)
+        integer(iwp), allocatable              :: primefactors(:)
+        integer(iwp), allocatable              :: exponents(:)
+        integer(iwp)                           :: nreduced, candidate, primelimit
+        ! output(:,1) gives the actual prime factors
+        ! output(:,2) gives the exponents of each prime factor
+
+        ! Edge cases 
+        if (number < 2) then 
+            allocate(output(0,2))
+            return
+        end if
+
+        ! Set a running division product
+        nreduced = number
+
+        ! remove factors of 2 first
+        if (mod(nreduced, 2) == 0) then
+            allocate(primefactors(1))
+            allocate(exponents(1))
+            primefactors(1) = 2
+            exponents(1) = 0
+            do while (mod(nreduced, 2) == 0)
+                nreduced = nreduced / 2
+                exponents(1) = exponents(1) + 1
+            end do
+        end if
+
+        ! We will find the prime factors by trial division, in other words
+        ! just checking every number to see if it evenly divides the target.
+        candidate  = 3_iwp
+        primelimit = int(sqrt(real(number, rwp)), iwp)
+        if (.not. allocated(primefactors)) allocate(primefactors(0))
+        if (.not. allocated(exponents)) allocate(exponents(0))
+
+        do 
+            ! once nreduced reaches 1, we can stop the loop
+            if (nreduced == 1) exit
+            ! if candidate ever exceeds primelimit, then we know that
+            ! the remaining "nreduced" must be a prime, so we can stop
+            if (candidate > primelimit + 1) then
+                call reallocate(primefactors)
+                call reallocate(exponents)
+                primefactors(size(primefactors)) = nreduced
+                exponents(size(exponents))       = 1
+                exit 
+            end if
+            ! see if candidate evenly divides number 
+            if (mod(nreduced, candidate) == 0) then
+                ! update the primefactors and exponents
+                call reallocate(primefactors)
+                call reallocate(exponents)
+                primefactors(size(primefactors)) = candidate
+                exponents(size(exponents))       = 0
+                do while (mod(nreduced, candidate) == 0)
+                    ! update the running division result
+                    nreduced = nreduced / candidate
+                    exponents(size(exponents)) = exponents(size(exponents)) + 1
+                end do
+                ! but don't increment candidate in case the number
+                ! is multiply divisible by it; just skip to the next
+                ! loop iteration
+                primelimit = int(sqrt(real(nreduced, rwp)), iwp)
+            end if
+            ! update the candidate -
+            ! we only need to check odd numbers since we already removed
+            ! factors of 2
+            candidate = candidate + 2
+        end do
+
+        ! concatenate the results into primefactorize
+        allocate(output(size(primefactors),2))
+        output(:,1) = primefactors(:)
+        output(:,2) = exponents(:)
+
+        deallocate(primefactors)
+        deallocate(exponents)
+
+    end subroutine primefactorize
 
 
     ! Sieve of Eratosthenes: Generates all prime numbers less than n
