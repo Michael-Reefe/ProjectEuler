@@ -22,6 +22,7 @@ program largest_product_in_a_grid
     do i=1,ni
         read(1,*) grid(i,:) 
     end do
+    close(1)
 
     ! now we need to check rows, columns, and diagonals
     maxprod = 0

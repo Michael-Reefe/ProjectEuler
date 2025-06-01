@@ -1,12 +1,11 @@
 program large_sum
 
+    use utils
     implicit none
-    integer, parameter :: n=100
-    integer        :: i, j, s, d, ones, carry, stat=1
-    character(1)   :: onestr
-    character(10)  :: carrystr
-    character(50)  :: bignumbers(n)
-    character(60)  :: bigsum, bigsuml
+    integer, parameter :: n=100, c=60
+    integer            :: ii, jj, stat=1
+    character(c)       :: bignumbers(n)
+    character(c+10)    :: bignumsum
 
     print *, '-----------------------------------'
     print *, 'Problem 13: Large Sum              '
@@ -22,30 +21,26 @@ program large_sum
         stop 
     end if
     ! fill in the numbers
-    do i=1,n
-        read(1,*) bignumbers(i) 
-    end do
-
-    ! work out the sum one digit at a time
-    carry = 0
-    do j=50,1,-1
-        s = carry
-        do i=1,n
-            read(bignumbers(i)(j:j), *) d
-            s = s + d
+    do ii=1,n
+        read(1,*) bignumbers(ii)(11:60)
+        ! zero-pad the first few digits to leave space for the sum
+        do jj=1,10
+            bignumbers(ii)(jj:jj) = '0'
         end do
-        ones = mod(s, 10)  
-        write(onestr, '(i1)') ones
-        bigsum(j+10:j+10) = onestr
-        carry = (s - ones) / 10
     end do
-    
-    ! handle the rest of the 'carry' by appending
-    ! it to the beginning
-    write(carrystr, '(i0)') carry
-    bigsum(1:10) = adjustr(carrystr)
-    bigsuml = adjustl(bigsum)
+    close(1)
 
-    print *, 'Answer: ', bigsuml(1:10)
+    ! call the bigadd function
+    bignumsum = bigadd(bignumbers, c, n)
+
+    ! get the first ten NON-ZERO digits
+    jj = 1
+    do while (bignumsum(jj:jj) == '0')
+        jj = jj + 1
+    end do
+
+    print *, 'Answer: ', bignumsum(jj:jj+9)
+
+contains 
 
 end program large_sum

@@ -5,11 +5,9 @@ module utils
     private                  
     ! explicitly declare public entities
     public iwp, rwp, minint32, maxint32
-    public reallocate,& 
-        primefactorize, &
-        sieve_of_eratosthenes, &
-        segmented_sieve_step, &
-        choose
+    public reallocate, primefactorize, &
+        sieve_of_eratosthenes, segmented_sieve_step, &
+        choose, bigadd, bigexp
 
     integer, parameter :: iwp = selected_int_kind(12)
     integer, parameter :: rwp = kind(0d0)
@@ -219,5 +217,88 @@ contains
         end do
 
     end function choose
+
+
+    ! add two large numbers together
+    ! NOTE: make sure numbersize is large enough to hold the sum
+    ! of all numbers in bignums!
+    function bigadd(bignums, numbersize, nnumbers) result(bigsum)
+        integer, intent(in)               :: numbersize, nnumbers
+        character(numbersize), intent(in) :: bignums(nnumbers)
+        integer                  :: i, j, s, d, ones, carry
+        character(1)             :: onestr
+        character(numbersize)    :: bigsum
+
+        ! work out the sum one digit at a time
+        carry = 0
+        do j=numbersize,1,-1
+            s = carry
+            do i=1,nnumbers
+                read(bignums(i)(j:j), *) d
+                s = s + d
+            end do
+            ones = mod(s, 10)  
+            write(onestr, '(i1)') ones
+            bigsum(j:j) = onestr
+            carry = (s - ones) / 10
+        end do
+
+    end function bigadd
+
+
+    ! a function for multiplying a big number by a smaller number
+    subroutine bigmult(bignum, smallnum, numbersize)
+        integer, intent(in)                  :: numbersize, smallnum
+        integer                              :: j, d, m, carry, ones
+        character(1)                         :: onestr
+        character(numbersize), intent(inout) :: bignum
+
+        ! work out the product one digit at a time
+        carry = 0
+        do j=numbersize,1,-1
+            read(bignum(j:j), *) d
+            m = d * smallnum + carry
+            ones = mod(m, 10)  
+            write(onestr, '(i1)') ones
+            bignum(j:j) = onestr
+            carry = (m - ones) / 10
+        end do
+
+    end subroutine bigmult
+
+
+    ! a function for exponentiating big numbers that
+    ! can't be stored as integers (at least not without
+    ! some external bigint library that I don't want to
+    ! mess with)
+    !    a is the base and b is the exponent
+    subroutine bigexp(bignum, a, b)
+        integer, intent(in) :: a, b
+        real    :: loga
+        integer :: i
+        integer :: nchar
+        character(:), intent(out), allocatable :: bignum
+
+        ! compute the logarithm (base 10) to get an idea of how 
+        ! many characters we need in the string
+        loga  = b * log10(real(a))
+        nchar = ceiling(loga)
+        if (nchar == loga) nchar = nchar + 1
+        allocate(character(nchar) :: bignum)
+
+        ! zero-fill and initialize a placeholder of 1 
+        do i=1,nchar 
+            bignum(i:i) = '0'
+        end do
+        bignum(nchar:nchar) = '1'
+
+        ! exponentiation is repeated multiplication
+        do i=1,b
+            ! call the bigmult subroutine to multiply 'bignum' by a
+            call bigmult(bignum, a, nchar)
+        end do
+
+    end subroutine bigexp
+
 
 end module utils
