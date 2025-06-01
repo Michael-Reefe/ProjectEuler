@@ -23,6 +23,6 @@ program power_digit_sum
         digitsum = digitsum + d
     end do
 
-    print *, digitsum
+    print *, 'Answer:', digitsum
 
 end program power_digit_sum
