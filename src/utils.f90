@@ -8,7 +8,8 @@ module utils
     public reallocate,& 
         primefactorize, &
         sieve_of_eratosthenes, &
-        segmented_sieve_step
+        segmented_sieve_step, &
+        choose
 
     integer, parameter :: iwp = selected_int_kind(12)
     integer, parameter :: rwp = kind(0d0)
@@ -202,5 +203,21 @@ contains
         end do
 
     end subroutine segmented_sieve_step
+
+
+    ! calculate the binomial coefficient "n choose k"
+    pure integer(iwp) function choose(n, k)
+        integer, intent(in) :: n, k
+        integer             :: i
+
+        ! To avoid overflowing, we don't want to calculate large factorials out
+        ! of the gate.  We can instead use a formula that factors out
+        ! the factors that appear in both the numerator and denominator.
+        choose = 1
+        do i=1,k 
+            choose = choose * (n + 1 - i) / i 
+        end do
+
+    end function choose
 
 end module utils
