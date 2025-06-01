@@ -1,0 +1,2 @@
+using ProjectEulerJulia
+runall()
