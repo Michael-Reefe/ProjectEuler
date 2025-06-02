@@ -8,3 +8,7 @@ function euler10(n::Integer=2_000_000)
     (sum ∘ prime_sieve)(n)
 
 end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    println("Problem 10: $(euler10())")
+end

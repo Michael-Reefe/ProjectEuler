@@ -24,7 +24,7 @@ program lattice_paths
     ! of choices, we have:
     k = gridx
 
-    ! So, the problem boils down to calculating 400 choose 2.
+    ! So, the problem boils down to calculating 40 choose 20.
     ! There is a binomial coefficient function in the "utils"
     ! module.
 

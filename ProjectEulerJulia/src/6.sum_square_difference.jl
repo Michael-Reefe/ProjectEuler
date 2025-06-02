@@ -3,7 +3,7 @@ function euler6(nmax::Integer=100)
     # compute the sum of the squares and the square
     # of the sum
     numbers = 1:nmax
-    sum(numbers)^2 - sum(numbers.^2)
+    sum(numbers)^2 - sum(x->x^2, numbers)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__

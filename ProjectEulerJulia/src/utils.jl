@@ -16,7 +16,7 @@ function primefactorize(number::Integer)
 
     # Edge cases
     if number < 2
-        return 
+        return primefactors, exponents
     end
 
     # Set a running division result 
@@ -27,7 +27,7 @@ function primefactorize(number::Integer)
         push!(primefactors, 2)
         push!(exponents, 0)
         while nreduced % 2 == 0
-            nreduced /= 2
+            nreduced ÷= 2
             exponents[end] += 1
         end
     end
@@ -54,7 +54,7 @@ function primefactorize(number::Integer)
             push!(exponents, 0)
             # loop through, update the running division result, and the exponent count
             while nreduced % candidate == 0
-                nreduced /= candidate
+                nreduced ÷= candidate
                 exponents[end] += 1
             end
             # update the upper limit
@@ -104,7 +104,7 @@ function segmented_sieve_step!(primes::Vector{<:T}, n::T, chunksize::T) where {T
     primemask = trues(chunksize)
 
     primelimit = floor(Int, sqrt(m))
-    for i ∈ eachindex(primes)
+    @inbounds for i ∈ eachindex(primes)
         p = primes[i]
         p > primelimit && break
         # j enumerates the multiples of p within the range (n, m)

@@ -6,9 +6,9 @@ function euler9(sum_target::Integer=1000)
     # of 1000.
     a = b = c = 0
     found = false
-    for i ∈ 1:1000 
+    for i ∈ 1:sum_target 
         found && break
-        for j ∈ i+1:1000
+        for j ∈ i+1:sum_target
             a, b, c = pythagorean_triplet(i, j)
             if (a+b+c) == sum_target 
                 found = true
@@ -28,7 +28,11 @@ end
     b = m^2 - n^2
     c = m^2 + n^2
     if (n % 2 ≠ 0) && (m % 2 ≠ 0) 
-        a /= 2; b /= 2; c /= 2
+        a ÷= 2; b ÷= 2; c ÷= 2
     end
     a, b, c
 end 
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    println("Problem 9: $(euler9())")
+end

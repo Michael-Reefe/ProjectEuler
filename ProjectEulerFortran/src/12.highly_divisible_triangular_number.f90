@@ -12,6 +12,7 @@ program highly_divisible_triangular_number
     ! loop through and have a running total that gives the 
     ! triangular numbers
     i = 1
+    ndiv = 1
     ndiv_tmp = 1
     do while (ndiv < 500)
         ! triangular numbers can be generated with this formula:

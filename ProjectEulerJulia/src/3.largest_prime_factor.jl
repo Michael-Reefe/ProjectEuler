@@ -5,9 +5,7 @@ function euler3(number::Integer=600851475143)
     # will be useful for future problems.  We can just use
     # that function here and take the maximum value in the
     # output array.
-    primes, _ = primefactorize(number)
-
-    maximum(primes)
+    primefactorize(number)[1] |> maximum
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__

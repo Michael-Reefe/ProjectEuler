@@ -5,7 +5,7 @@ function euler8(window_size::Integer=13)
     # and store our big number as a string
     bignum = read(joinpath(@__DIR__, "..", "data", "8.bignumber.dat"), String)
 
-    # Now all we have to do is scan through "bignumber" with
+    # Now all we have to do is scan through "bignum" with
     # a window size of 13 characters and find the largest 
     # product of the digits
     maxprod = 0
@@ -23,4 +23,8 @@ function euler8(window_size::Integer=13)
     end
 
     maxprod
+end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    println("Problem 8: $(euler8())")
 end

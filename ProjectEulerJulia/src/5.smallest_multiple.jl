@@ -1,5 +1,5 @@
+# Just use Julia's built in LCM function (lol)
 function euler5(nmax::Integer=20)
-    # Just use Julia's built in LCM function (lol)
     lcm(1:nmax...)
 end
 

@@ -1,17 +1,8 @@
+# This is a pretty simple one-liner!
+# Just check if each i is divisible by 3 and 5 before
+# adding it to the sum.
 function euler1(limit::Integer=1000)
-
-    # This can be done with a pretty simple loop and the mod function
-    # Note: It could be written in one line using list comprehension,
-    #       but writing out the loop is actually faster and more memory
-    #       efficient!
-    s = 0
-    for i ∈ 0:limit-1
-        if i % 3 == 0 || i % 5 == 0
-            s += i
-        end
-    end
-
-    s
+    sum(i -> i % 3 == 0 || i % 5 == 0 ? i : 0, 0:limit-1)
 end
 
 # This only runs if this file is called as the main script.
