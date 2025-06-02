@@ -1,6 +1,6 @@
 # keep a dictionary to store the previous results
 # so we don't re-calculate anything unnecessarily
-collatz_lengths = Dict{Int,Int}(1 => 1)
+const collatz_lengths = Dict{Int,Int}(1 => 1)
 
 function euler14(maxn::Integer=1_000_000)
 
