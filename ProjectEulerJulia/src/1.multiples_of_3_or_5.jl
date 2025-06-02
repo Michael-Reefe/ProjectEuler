@@ -1,14 +1,16 @@
-function euler1()
+function euler1(limit::Integer=1000)
+
     # This can be done with a pretty simple loop and the mod function
     # Note: It could be written in one line using list comprehension,
     #       but writing out the loop is actually faster and more memory
     #       efficient!
     s = 0
-    for i ∈ 0:999
-        if mod(i, 3) == 0 || mod(i, 5) == 0
+    for i ∈ 0:limit-1
+        if i % 3 == 0 || i % 5 == 0
             s += i
         end
     end
+
     s
 end
 
