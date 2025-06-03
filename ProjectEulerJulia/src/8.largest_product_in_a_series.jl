@@ -12,7 +12,7 @@ function euler8(window_size::Integer=13)
     for i ∈ 1:length(bignum)-window_size+1
         # read in 13 digits from bignumber and multiply them
         testprod = 1
-        for j ∈ i:i+window_size-1
+        @inbounds for j ∈ i:i+window_size-1
             testprod *= parse(Int, bignum[j])
         end
         # check if this is larger than the largest previously
@@ -21,6 +21,12 @@ function euler8(window_size::Integer=13)
             maxprod = testprod
         end
     end
+
+    # alt version for functional girlies:
+    # maximum(
+    #     i->mapreduce(s->parse(Int, s), *, @view bignum[i:i+window_size-1]),
+    #     1:length(bignum)-window_size+1
+    # )
 
     maxprod
 end

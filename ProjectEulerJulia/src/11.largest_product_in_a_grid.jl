@@ -12,14 +12,14 @@ function euler11(window_size::Integer=4)
         for j ∈ 1:nj
             # check the row, if in range:
             if j ≤ nj-window_size+1
-                testprod = prod(grid[i,j:j+window_size-1])
+                testprod = prod(@view grid[i,j:j+window_size-1])
                 if testprod > maxprod 
                     maxprod = testprod
                 end
             end
             # check the column, if in range:
             if i ≤ ni-window_size+1
-                testprod = prod(grid[i:i+window_size-1,j])
+                testprod = prod(@view grid[i:i+window_size-1,j])
                 if testprod > maxprod
                     maxprod = testprod
                 end
