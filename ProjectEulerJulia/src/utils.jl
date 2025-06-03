@@ -118,3 +118,24 @@ function segmented_sieve_step!(primes::Vector{<:T}, n::T, chunksize::T) where {T
     newprimes = (n:m)[primemask]
     append!(primes, newprimes)
 end
+
+
+# there is a way faster method to check the maximum sum of 
+# a path in a triangle rather than just brute force.
+# - start at the bottom of the triangle, and
+#   look at the row above: for each number, add the 
+#   maximum of the two below it that the path connects to.
+# - iteratively work backwards until you get to the top 
+# - the final element will hold the maximum path sum
+function triangle_maxpathsum!(triangle::Vector{T}) where T <: Vector{<:Integer}
+    for i in Iterators.reverse(eachindex(triangle))
+        # skip the last iteration
+        i == 1 && continue
+        # add the maximum of the two elements accessible to the previous row 
+        for j in eachindex(triangle[i])
+            j == length(triangle[i]) && continue
+            triangle[i-1][j] += max(triangle[i][j], triangle[i][j+1])
+        end
+    end
+    return triangle[1][1]
+end
