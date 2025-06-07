@@ -7,64 +7,73 @@
 # negative. The Julia functions mod(x,y) and rem(x,y) can be called 
 # more explicitly if one prefers one over the other.
 
-# A function that finds the prime factors of a given number
-function primefactorize(number::Integer)
 
-    # Prepare outputs
-    primefactors = Int[]
-    exponents    = Int[]
+# Here we define a PrimeFactorize struct that will extend Base.iterate 
+# such that it will return the prime factors (and exponents on those
+# prime factors) as an iterator
+struct PrimeFactorize{T<:Integer}
+    n::T
+end
+
+# This defines an iterator such that if we do, for example:
+# "for (primefactors, exponents) in PrimeFactorize(number)"...
+# we will get an iterator over the prime factors and exponents for number
+function Base.iterate(pfact::PrimeFactorize{T}, 
+                      state::Tuple{T,T,T}=(pfact.n,floor(typeof(pfact.n),sqrt(pfact.n)),3)) where {T<:Integer}
 
     # Edge cases
-    if number < 2
-        return primefactors, exponents
+    if pfact.n < 2
+        return nothing
     end
 
-    # Set a running division result 
-    nreduced = number
+    # Keep track of our running division result and our candidate divisor
+    nreduced, primelimit, candidate = state
 
     # Remove factors of 2 first
     if nreduced % 2 == 0
-        push!(primefactors, 2)
-        push!(exponents, 0)
+        pfi = 2
+        expi = 0
         while nreduced % 2 == 0
             nreduced ÷= 2
-            exponents[end] += 1
+            expi += 1
         end
+        primelimit = floor(Int, sqrt(nreduced))
+        return (pfi, expi), (nreduced, primelimit, 3)
     end
 
     # We will find the prime factors by trial division, in other words
     # just checking every number to see if it evenly divides the target.
-    candidate = 3
+
     # An upper limit of sqrt(N) is put in place since a number can have 
     # no more than 1 prime factor larger than this.
-    primelimit = floor(Int, sqrt(nreduced))
+    # primelimit = floor(Int, sqrt(nreduced))
 
     # If nreduced ever reaches 1, we can stop, as we've found all the factors
     while nreduced > 1
         # If candidate exceeds the prime limit, we know the remaining nreduced
         # must itself be the last prime factor
         if candidate > primelimit + 1
-            push!(primefactors, nreduced)
-            push!(exponents, 1)
-            break
+            pfi = nreduced
+            nreduced = primelimit = 1
+            return (pfi, 1), (nreduced, primelimit, candidate+2)
         end
         # See if candidate evenly divides nreduced
         if nreduced % candidate == 0
-            push!(primefactors, candidate)
-            push!(exponents, 0)
+            pfi = candidate
+            expi = 0
             # loop through, update the running division result, and the exponent count
             while nreduced % candidate == 0
                 nreduced ÷= candidate
-                exponents[end] += 1
+                expi += 1
             end
-            # update the upper limit
-            primelimit = floor(Integer, sqrt(nreduced))
+            primelimit = floor(Int, sqrt(nreduced))
+            return (pfi, expi), (nreduced, primelimit, candidate+2)
         end
-        # Update the candidate, stepping by 2 since we already checked all the even nums
         candidate += 2
     end
 
-    primefactors, exponents
+    # If we make it to this point, we've found all the prime factors, so we can stop iterating
+    return nothing
 end
 
 
@@ -117,6 +126,59 @@ function segmented_sieve_step!(primes::Vector{<:T}, n::T, chunksize::T) where {T
     # append the newly found prime numbers to the "primes" array
     newprimes = (n:m)[primemask]
     append!(primes, newprimes)
+end
+
+
+# The number of divisors of any integer is directly
+# related to its prime factorization, which we already
+# have a function for.
+# (see: https://en.wikipedia.org/wiki/Divisor_function#Formulas_at_prime_powers)
+# Specifically, the number of divisors is equal to the 
+# product of the exponents of each prime factor, which
+# are stored in the second column of primes
+function ndivisors(number::Integer)
+    prod(x->x[2]+1, PrimeFactorize(number); init=1)
+end
+
+
+# The sum of the divisors of any integer is similarly
+# related to its prime factorization.
+function sumdivisors(number::Integer)
+    prod(x->(x[1]^(x[2]+1)-1)÷(x[1]-1), PrimeFactorize(number); init=1)
+end
+
+
+# A function to compute all divisors of a number (including 1 and itself), using 
+# its prime factorization. Note that the output will NOT be sorted in any particular
+# order
+function find_all_divisors(number::Integer)
+    primes    = Int[]
+    exponents = Int[]
+    for (prime, exponent) in PrimeFactorize(number)
+        push!(primes, prime)
+        push!(exponents, exponent)
+    end
+    ndivisors = prod(x->x+1, exponents; init=1)
+    # initialize an array to hold the divisors of the proper length
+    divisors = zeros(Int, ndivisors)
+    divisors[1] = 1
+    divisors[end] = number
+    # edge case
+    if length(primes) ≤ 1
+        return divisors
+    end
+    # this is an array of all primes except we store copies of each 
+    # prime equaling the number of times number is divisible by it
+    # (i.e. if number is divisible by 2^3, we store 2 three times)
+    primes_expanded = zeros(Int, sum(exponents))
+    j = 1
+    for i in eachindex(primes)
+        primes_expanded[j:j+exponents[i]-1] .= primes[i]
+        j += exponents[i]
+    end
+    # go through every possible combination of prime factors
+    divisors[2:end] .= map(prod, unique(combinations(primes_expanded)))
+    divisors
 end
 
 

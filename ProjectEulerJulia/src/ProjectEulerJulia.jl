@@ -3,6 +3,7 @@ module ProjectEulerJulia
 
 using BenchmarkTools
 using DelimitedFiles
+using Combinatorics
 
 # include all of the files for each problem
 include("utils.jl")
@@ -26,14 +27,16 @@ include("17.number_letter_counts.jl")
 include("18.maximum_path_sum_I.jl")
 include("19.counting_sundays.jl")
 include("20.factorial_digit_sum.jl")
+include("21.amicable_numbers.jl")
 
 # Export functions
-n = 20
+n = 21
 export julia_main, runall,
        euler1,   euler2,   euler3,   euler4,   euler5,
        euler6,   euler7,   euler8,   euler9,   euler10,
        euler11,  euler12,  euler13,  euler14,  euler15,
-       euler16,  euler17,  euler18,  euler19,  euler20
+       euler16,  euler17,  euler18,  euler19,  euler20,
+       euler21
 
 # Define the "main" function to run everything
 # (this is set up for usage with PackageCompiler.jl

@@ -41,3 +41,8 @@ end
 
 # We can make a little function to check whether a year is a leap year
 is_leap_year(year::Integer) = iszero(year % 4) && (!iszero(year % 100) || iszero(year % 400))
+
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    println("Problem 19: $(euler19())")
+end

@@ -23,16 +23,6 @@ function euler12(ndiv_target::Integer=500)
     tnum
 end
 
-# The number of divisors of any integer is directly
-# related to its prime factorization, which we already
-# have a function for.
-# Specifically, the number of divisors is equal to the 
-# product of the exponents of each prime factor, which
-# are stored in the second column of primes
-function ndivisors(number::Integer)
-    prod(x->x+1, primefactorize(number)[2]; init=1)
-end
-
 if abspath(PROGRAM_FILE) == @__FILE__
     println("Problem 12: $(euler12())")
 end
