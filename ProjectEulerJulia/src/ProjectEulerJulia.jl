@@ -29,15 +29,17 @@ include("19.counting_sundays.jl")
 include("20.factorial_digit_sum.jl")
 include("21.amicable_numbers.jl")
 include("22.names_scores.jl")
+include("23.non-abundant_sums.jl")
+include("24.lexicographic_permutations.jl")
 
 # Export functions
-n = 22
+n = 24
 export julia_main, runall,
        euler1,   euler2,   euler3,   euler4,   euler5,
        euler6,   euler7,   euler8,   euler9,   euler10,
        euler11,  euler12,  euler13,  euler14,  euler15,
        euler16,  euler17,  euler18,  euler19,  euler20,
-       euler21,  euler22
+       euler21,  euler22,  euler23,  euler24
 
 # Define the "main" function to run everything
 # (this is set up for usage with PackageCompiler.jl
