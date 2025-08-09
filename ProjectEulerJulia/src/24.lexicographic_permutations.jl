@@ -1,4 +1,6 @@
-function euler24(digits=0:9, n=1000000)
+function euler24(digits=0:9, n::Integer=1000000)
+
+    # Solution taken from user nmadnani on the ProjectEuler forums.
 
     # Since we are searching for lexigographical order, we know the 
     # permutations are always ordered in the same way.  So rather than 
