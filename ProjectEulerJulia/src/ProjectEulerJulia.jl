@@ -32,15 +32,17 @@ include("22.names_scores.jl")
 include("23.non-abundant_sums.jl")
 include("24.lexicographic_permutations.jl")
 include("25.1000-digit_fibonacci_number.jl")
+include("26.reciprocal_cycles.jl")
 
 # Export functions
-n = 25
+n = 26
 export julia_main, runall,
        euler1,   euler2,   euler3,   euler4,   euler5,
        euler6,   euler7,   euler8,   euler9,   euler10,
        euler11,  euler12,  euler13,  euler14,  euler15,
        euler16,  euler17,  euler18,  euler19,  euler20,
-       euler21,  euler22,  euler23,  euler24,  euler25
+       euler21,  euler22,  euler23,  euler24,  euler25,
+       euler26
 
 # Define the "main" function to run everything
 # (this is set up for usage with PackageCompiler.jl
