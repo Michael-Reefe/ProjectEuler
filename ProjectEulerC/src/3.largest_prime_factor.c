@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "lists.h"
 #include "utils.h"
 
 int main() {
@@ -10,9 +9,26 @@ int main() {
     printf("https://projecteuler.net/problem=3\n");
     printf("----------------------------------\n");
 
-    PrimeFactorization pf = primefactorize(600851475143);
-    uint64_t lpf = max_in_list(pf.factors);
-    free_prime_factorization(pf);
+    // PrimeFactorization pf = primefactorize(600851475143);
+    // uint64_t lpf = max_in_list(pf.factors);
+    // free_prime_factorization(pf);
+
+    // Set up the iterator
+    PrimeFactorIterator *it = initialize_prime_factor_iterator(600851475143);
+
+    PrimeFactor pf;    // container
+    uint64_t lpf = 0;  // largest prime factor
+    uint64_t cpf = 0;  // current prime factor
+
+    // Iterate through the prime factors and keep track of the maximum 
+    while (it->stop != 1) {
+        pf = prime_iterate(it);
+        cpf = pf.factor;
+        if (cpf > lpf) lpf = cpf;
+    }
+
+    // Don't forget to deallocate!
+    destroy_prime_factor_iterator(it);
 
     // Output the result
     printf("Answer: %llu\n", lpf);

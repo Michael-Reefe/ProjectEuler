@@ -8,6 +8,16 @@
 Make the framework for doubly linked lists 
 *****************************************/
 
+#define LL_TYPE int8_t
+#define LL_TAG  i8
+#define LL_FMT  "%3d"
+#include "lists_template.h"
+
+#define LL_TYPE uint8_t
+#define LL_TAG  ui8
+#define LL_FMT  "%3d"
+#include "lists_template.h"
+
 #define LL_TYPE int16_t
 #define LL_TAG  i16
 #define LL_FMT  "%5d"

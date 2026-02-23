@@ -5,6 +5,8 @@
 #include <stdint.h>
 
 #define LINKEDLIST_TYPES(X) \
+    X(int8_t,   i8  ) \
+    X(uint8_t,  ui8 ) \
     X(int16_t,  i16 ) \
     X(uint16_t, ui16) \
     X(int32_t,  i32 ) \
@@ -29,6 +31,8 @@ LINKEDLIST_TYPES(GEN_CREATE_LIST)
 LINKEDLIST_TYPES(GEN_CREATE_NODE)
 
 #define LINKEDLIST_STRUCTS(X) \
+    X(LinkedList_i8,   i8  )  \
+    X(LinkedList_ui8,  ui8 )  \
     X(LinkedList_i16,  i16 )  \
     X(LinkedList_ui16, ui16)  \
     X(LinkedList_i32,  i32 )  \
