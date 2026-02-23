@@ -11,7 +11,8 @@ int main() {
     printf("----------------------------------\n");
 
     PrimeFactorization pf = primefactorize(600851475143);
-    uint64_t lpf = get_max_list(pf.factors);
+    uint64_t lpf = max_in_list(pf.factors);
+    free_prime_factorization(pf);
 
     // Output the result
     printf("Answer: %llu\n", lpf);

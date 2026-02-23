@@ -7,12 +7,15 @@
     // A prime factorization structure that contains a list of prime factors
     // and a list of exponents on those prime factors
     typedef struct PrimeFactorization {
-        LinkedList *factors;
-        LinkedList *exponents;
+        LinkedList_ui64 *factors;
+        LinkedList_ui64 *exponents;
     } PrimeFactorization;
 
     // Functions for PrimeFactorizations
-    PrimeFactorization create_prime_factorization(LinkedList *prime_factors, LinkedList *exponents);
+
+    PrimeFactorization create_prime_factorization();
+    void free_prime_factorization(PrimeFactorization pf);
+
     PrimeFactorization primefactorize(uint64_t number);
 
 #endif

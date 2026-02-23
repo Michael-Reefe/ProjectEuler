@@ -12,11 +12,18 @@ useful for many problems in Project Euler.
 */
 
 // a constructor for PrimeFactorization structs
-PrimeFactorization create_prime_factorization(LinkedList *prime_factors, LinkedList *exponents) {
+PrimeFactorization create_prime_factorization() {
     PrimeFactorization pf;
-    pf.factors = prime_factors;
+    LinkedList_ui64 *factors   = create_linked_list_ui64();
+    LinkedList_ui64 *exponents = create_linked_list_ui64();
+    pf.factors = factors;
     pf.exponents = exponents;
     return pf;
+}
+
+void free_prime_factorization(PrimeFactorization pf) {
+    free_list(pf.factors);
+    free_list(pf.exponents);
 }
 
 // This function calculates the prime factorization of a number,
@@ -24,21 +31,15 @@ PrimeFactorization create_prime_factorization(LinkedList *prime_factors, LinkedL
 // linked lists containing the prime factors and exponents
 PrimeFactorization primefactorize(uint64_t number) {
 
-    // Set up the linked lists for the outputs
-    LinkedList *prime_factors = create_linked_list(ui64, sizeof(number));
-    LinkedList *exponents     = create_linked_list(ui64, sizeof(number));
+    // Set up the outputs
+    PrimeFactorization pf = create_prime_factorization();
 
-    uint64_t zero = 0;
-    uint64_t one  = 1;
-
-    uint64_t pf0 = 2;
-    uint64_t ex0 = 0;
-    append(prime_factors, &pf0);
-    append(exponents,     &ex0);
+    // Start with 2
+    append(pf.factors,   2);
+    append(pf.exponents, 0);
 
     // Edge case
     if (number < 2) {
-        PrimeFactorization pf = create_prime_factorization(prime_factors, exponents);
         return pf;
     }
 
@@ -48,7 +49,7 @@ PrimeFactorization primefactorize(uint64_t number) {
     // Remove factors of 2 first
     while (nreduced % 2 == 0) {
         nreduced /= 2;
-        incr_value_at(exponents, one, exponents->length-1);  // increment the value in exponents by 1
+        incr_at_index(pf.exponents, 1, get_length(pf.exponents)-1);  // increment the value in exponents by 1
     }
 
     // We will find the prime factors by trial division, in other words
@@ -61,18 +62,18 @@ PrimeFactorization primefactorize(uint64_t number) {
         // if candidate ever exceeds primelimit, then we know that
         // the remaining "nreduced" must be a prime, so we can stop
         if (candidate > primelimit + 1) {
-            append(prime_factors, &nreduced);
-            append(exponents,     &one);
+            append(pf.factors,  nreduced);
+            append(pf.exponents,       1);
             break;
         }
         // see if candidate evenly divides number 
         if (nreduced % candidate == 0) {
-            append(prime_factors, &candidate);
-            append(exponents,     &zero);
+            append(pf.factors,  candidate);
+            append(pf.exponents,        0);
             while (nreduced % candidate == 0) {
                 // update the running division result
                 nreduced /= candidate;
-                incr_value_at(exponents, one, exponents->length-1);
+                incr_at_index(pf.exponents, 1, get_length(pf.exponents)-1);
             }
             // update the upper limit we need to check
             primelimit = (uint64_t)sqrt((double)nreduced);
@@ -81,7 +82,5 @@ PrimeFactorization primefactorize(uint64_t number) {
         candidate += 2;
     }
 
-    // construct our output object
-    PrimeFactorization pf = create_prime_factorization(prime_factors, exponents);
     return pf;
 }
