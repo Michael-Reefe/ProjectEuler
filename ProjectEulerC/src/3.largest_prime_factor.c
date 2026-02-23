@@ -9,10 +9,6 @@ int main() {
     printf("https://projecteuler.net/problem=3\n");
     printf("----------------------------------\n");
 
-    // PrimeFactorization pf = primefactorize(600851475143);
-    // uint64_t lpf = max_in_list(pf.factors);
-    // free_prime_factorization(pf);
-
     // Set up the iterator
     PrimeFactorIterator *it = initialize_prime_factor_iterator(600851475143);
 
