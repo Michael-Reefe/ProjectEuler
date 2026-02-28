@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include "utils.h"
@@ -10,11 +9,11 @@ useful for many problems in Project Euler.
 
 */
 
-PrimeFactorIterator *initialize_prime_factor_iterator(uint64_t number) {
+PrimeFactorIterator *initialize_prime_factor_iterator(u64 number) {
     PrimeFactorIterator *it = (PrimeFactorIterator*)malloc(sizeof(PrimeFactorIterator));
     it->nreduced   = number;
     it->candidate  = 3;
-    it->primelimit = (uint64_t)sqrt((double)number);
+    it->primelimit = (u64)sqrt((f64)number);
     it->stop       = 0;
     return it;
 }
@@ -53,7 +52,7 @@ PrimeFactor prime_iterate(PrimeFactorIterator *it) {
             it->nreduced /= 2;
             pf.exponent += 1;
         }
-        it->primelimit = (uint64_t)sqrt((double)it->nreduced);
+        it->primelimit = (u64)sqrt((f64)it->nreduced);
         it->candidate = 3;
         return pf;
     }
@@ -79,7 +78,7 @@ PrimeFactor prime_iterate(PrimeFactorIterator *it) {
                 it->nreduced /= it->candidate;
                 pf.exponent += 1;
             }
-            it->primelimit = (uint64_t)sqrt((double)it->nreduced);
+            it->primelimit = (u64)sqrt((f64)it->nreduced);
             it->candidate += 2;
             return pf;
         }

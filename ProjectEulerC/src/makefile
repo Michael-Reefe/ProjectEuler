@@ -2,7 +2,8 @@
 
 # Compiler and options (use C17 standard)
 CC      = gcc
-CCFLAGS = -O3 -std=c17 -Wall -Werror
+CCFLAGS = -O3 -std=c17 -Wall -Werror -fsanitize=address
+LIBS    = -lm
 
 SRC_DIR=./
 BIN_DIR=../bin
@@ -17,7 +18,7 @@ all: $(BIN_FILES)
 
 # Compile rules
 $(BIN_DIR)/%.exe : $(SRC_DIR)/%.c | $(BIN_DIR)
-	$(CC) $(CCFLAGS) $^ lists.c utils.c -o $@
+	$(CC) $(CCFLAGS) $^ utils.c lists.c -o $@ $(LIBS)
 	chmod +x $@
 
 # Create the bin directory if it doesn't exist

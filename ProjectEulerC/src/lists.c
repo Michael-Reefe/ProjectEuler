@@ -40,12 +40,12 @@ Make the framework for doubly linked lists
 
 #define LL_TYPE int64_t
 #define LL_TAG  i64
-#define LL_FMT  "%20lld"
+#define LL_FMT  "%20ld"
 #include "lists_template.h"
 
 #define LL_TYPE uint64_t
 #define LL_TAG  ui64
-#define LL_FMT  "%20llu"
+#define LL_FMT  "%20lu"
 #include "lists_template.h"
 
 #define LL_TYPE float

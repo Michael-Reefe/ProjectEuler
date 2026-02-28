@@ -13,8 +13,8 @@ int main() {
     PrimeFactorIterator *it = initialize_prime_factor_iterator(600851475143);
 
     PrimeFactor pf;    // container
-    uint64_t lpf = 0;  // largest prime factor
-    uint64_t cpf = 0;  // current prime factor
+    u64 lpf = 0;  // largest prime factor
+    u64 cpf = 0;  // current prime factor
 
     // Iterate through the prime factors and keep track of the maximum 
     while (it->stop != 1) {
@@ -27,7 +27,7 @@ int main() {
     destroy_prime_factor_iterator(it);
 
     // Output the result
-    printf("Answer: %llu\n", lpf);
+    printf("Answer: %lu\n", lpf);
     printf("\n");
 
     return 0;
