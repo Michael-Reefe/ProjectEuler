@@ -19,7 +19,7 @@
     typedef double f64;
 
     typedef uintptr_t uptr;
-    typedef ptrdiff_t ptrdiff;
+    typedef ptrdiff_t ptrdf;
 
 #endif // CTYPES_H
 

@@ -2,7 +2,7 @@
 
 # Compiler and options (use C17 standard)
 CC      = gcc
-CCFLAGS = -O3 -std=c17 -Wall -Werror -fsanitize=address
+CCFLAGS = -O3 -std=c17 -Wall -Werror
 LIBS    = -lm
 
 SRC_DIR=./

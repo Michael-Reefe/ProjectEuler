@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "utils.h"
 
-// A function that checks if a number is a palindrom
+// A function that checks if a number is a palindrome
 i8 is_palindrome(i32 number) {
 
     // calculate the length of string we need
@@ -24,8 +24,8 @@ i8 is_palindrome(i32 number) {
     i8 ispal = 1;
     for (i32 i = 0; i < length/2; ++i) {
         // bounds checking (probably overkill)
-        assert((i >= 0) & (i < length));
-        assert((length-2-i >= 0) & (length-2-i < length));
+        assert((i >= 0) && (i < length));
+        assert((length-2-i >= 0) && (length-2-i < length));
         ispal &= (s[i] == s[length-2-i]);
     }
 
@@ -40,13 +40,14 @@ int main() {
     printf("https://projecteuler.net/problem=4\n");
     printf("----------------------------------\n");
 
+    i16 minn = 100;
     i16 maxn = 999;
     i32 gpp = 0, prod;
 
     /* Loop through every possible product of two 3 digit numbers.
        Start from the large end since that's more likely to contain 
        a large palindrome */
-    for (i16 n1 = maxn; n1 > 0; n1--) {
+    for (i16 n1 = maxn; n1 >= minn; n1--) {
         /* For the inner loop, use a min value of n1 so we don't have to
            repeat pairs of values */
         for (i16 n2 = maxn; n2 >= n1; n2--) {
