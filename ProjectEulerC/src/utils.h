@@ -27,6 +27,9 @@
 #define PROJECTEULERC_UTILS
 
     #include <stdlib.h>
+    #include <stdio.h>
+    #include <math.h>
+    #include <assert.h>
 
     // A prime factorization iterator structure.
     // Like in the Julia version, this is conceptually an iterator
@@ -51,4 +54,70 @@
     void destroy_prime_factor_iterator(PrimeFactorIterator *it);
     PrimeFactor prime_iterate(PrimeFactorIterator *it);
 
-#endif
+    // "SArrays" -- sized arrays which hold a length value
+    #define ARRAY_TYPES(X) \
+        X(i8 ) \
+        X(i16) \
+        X(i32) \
+        X(i64) \
+        X(u8 ) \
+        X(u16) \
+        X(u32) \
+        X(u64) \
+        X(f32) \
+        X(f64)
+
+    #define GEN_SIZED_ARRAY(type)           \
+        typedef struct _SizeArray_##type {  \
+            type*  arr;                     \
+            size_t length;                  \
+        } SArray_##type;
+    ARRAY_TYPES(GEN_SIZED_ARRAY)
+
+    // Functions for SArrays
+    #define __GEN_SARRAY_INIT(type) \
+        SArray_##type* init_SArray_##type(size_t length);
+    ARRAY_TYPES(__GEN_SARRAY_INIT)
+
+    #define __GEN_SARRAY_RESIZE(type) \
+        void resize_SArray_##type(SArray_##type *sarray, size_t new_length);
+    ARRAY_TYPES(__GEN_SARRAY_RESIZE)
+
+    #define __GEN_SARRAY_DEST(type) \
+        void free_SArray_##type(SArray_##type *sarray); 
+    ARRAY_TYPES(__GEN_SARRAY_DEST)
+
+    // Prime sieve functions
+    SArray_u64* sieve_of_eratosthenes(u64 n);
+    void segmented_sieve_step(u64 n, u64 chunksize, SArray_u64 *primes);
+
+    // Simple math macros
+
+    // max and min
+    #ifdef max
+    #undef max
+    #endif // max
+    #define max(a,b) (((a) > (b)) ? (a) : (b))
+
+    #ifdef min
+    #undef min
+    #endif //min
+    #define min(a,b) (((a) < (b)) ? (a) : (b))
+
+    // integer and float sums
+    #define i_sum(arr, len) ({                  \
+        i64 s = 0;                              \
+        for (u32 i = 0; i < len; ++i) {         \
+            s += (i64)arr[i];                   \
+        }                                       \
+        s; })                                   
+
+    #define f_sum(arr, len) ({                  \
+        f64 s = 0;                              \
+        for (u32 i = 0; i < len; ++i) {         \
+            s += (f64)arr[i];                   \
+        }                                       \
+        s; })                                   
+
+
+#endif // PROJECTEULERC_UTILS

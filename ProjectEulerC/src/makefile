@@ -3,6 +3,7 @@
 # Compiler and options (use C17 standard)
 CC      = gcc
 CCFLAGS = -O3 -std=c17 -Wall -Werror
+CCDEBUG = 
 LIBS    = -lm
 
 SRC_DIR=./
@@ -16,9 +17,13 @@ BIN_FILES=$(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.exe, $(SRC_FILES))
 # Default target
 all: $(BIN_FILES)
 
+# Debug compile
+debug: CCDEBUG = -fsanitize=address
+debug: all
+
 # Compile rules
 $(BIN_DIR)/%.exe : $(SRC_DIR)/%.c | $(BIN_DIR)
-	$(CC) $(CCFLAGS) $^ utils.c lists.c -o $@ $(LIBS)
+	$(CC) $(CCFLAGS) $(CCDEBUG) $^ utils.c lists.c -o $@ $(LIBS)
 	chmod +x $@
 
 # Create the bin directory if it doesn't exist
@@ -27,5 +32,5 @@ $(BIN_DIR):
 
 # Clean up
 clean: 
-	rm -f $(BIN_DIR)/*.exe $(OBJ_DIR)/*.o *.mod
+	rm -f $(BIN_DIR)/*.exe $(OBJ_DIR)/*.o $(BIN_DIR)/*.asm *.mod
 
