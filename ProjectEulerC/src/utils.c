@@ -36,6 +36,23 @@ void destroy_prime_factor_iterator(PrimeFactorIterator *it) {
     }
 ARRAY_TYPES(GEN_SARRAY_INIT)
 
+#define GEN_SARRAY2D_INIT(type)                                                         \
+    SArray2D_##type* init_SArray2D_##type(size_t len1, size_t len2) {                   \
+        SArray2D_##type *s2d = (SArray2D_##type*)malloc(sizeof(SArray2D_##type));       \
+        assert(s2d != NULL);                                                            \
+        type **arr = (type**)malloc(len1*sizeof(type*));                                \
+        assert(arr != NULL);                                                            \
+        for (u32 i = 0; i < len1; ++i) {                                                \
+            arr[i] = (type*)malloc(len2*sizeof(type));                                  \
+            assert(arr[i] != NULL);                                                     \
+        }                                                                               \
+        s2d->arr = arr;                                                                 \
+        s2d->len1 = len1;                                                               \
+        s2d->len2 = len2;                                                               \
+        return s2d;                                                                     \
+    }
+ARRAY_TYPES(GEN_SARRAY2D_INIT)
+
 // SArray resize
 #define GEN_SARRAY_RESIZE(type)                                                     \
     void resize_SArray_##type(SArray_##type *sarray, size_t new_length) {           \
@@ -46,6 +63,21 @@ ARRAY_TYPES(GEN_SARRAY_INIT)
     }
 ARRAY_TYPES(GEN_SARRAY_RESIZE)
 
+#define GEN_SARRAY2D_RESIZE(type)                                                               \
+    void resize_SArray2D_##type(SArray2D_##type *s2d, size_t new_len1, size_t new_len2) {       \
+        type **newarr = (type**)realloc(s2d->arr, new_len1*sizeof(type*));                      \
+        assert(newarr != NULL);                                                                 \
+        s2d->arr = newarr;                                                                      \
+        for (u32 i = 0; i < new_len1; ++i) {                                                    \
+            type *row = (type*)realloc(s2d->arr[i], new_len2*sizeof(type));                     \
+            assert(row != NULL);                                                                \
+            s2d->arr[i] = row;                                                                  \
+        }                                                                                       \
+        s2d->len1 = new_len1;                                                                   \
+        s2d->len2 = new_len2;                                                                   \
+    }
+ARRAY_TYPES(GEN_SARRAY2D_RESIZE)
+
 // SArray destructors
 #define GEN_SARRAY_DEST(type)                           \
     void free_SArray_##type(SArray_##type *sarray) {    \
@@ -53,6 +85,16 @@ ARRAY_TYPES(GEN_SARRAY_RESIZE)
         free(sarray);                                   \
     }
 ARRAY_TYPES(GEN_SARRAY_DEST)
+
+#define GEN_SARRAY2D_DEST(type)                         \
+    void free_SArray2D_##type(SArray2D_##type *s2d) {   \
+        for (u32 i = 0; i < s2d->len1; ++i) {           \
+            free(s2d->arr[i]);                          \
+        }                                               \
+        free(s2d->arr);                                 \
+        free(s2d);                                      \
+    }
+ARRAY_TYPES(GEN_SARRAY2D_DEST)
 
 // This function calculates the prime factorization of a number,
 // returning it as a PrimeFactorization object, which is just two 
@@ -123,6 +165,34 @@ PrimeFactor prime_iterate(PrimeFactorIterator *it) {
 
     return pf;
 }
+
+/* The number of divisors of any integer is directly
+   related to its prime factorization, which we already
+   have a function for.
+   (see: https://en.wikipedia.org/wiki/Divisor_function#Formulas_at_prime_powers)
+   Specifically, the number of divisors is equal to the 
+   product of the exponents of each prime factor, which
+   are stored in the second column of primes */
+u64 ndivisors(u64 num) {
+
+    // Set up the iterator
+    PrimeFactorIterator *it = initialize_prime_factor_iterator(num);
+
+    PrimeFactor pf;    // container
+    u64 ndiv = 1;      // output
+
+    // Iterate through the prime factors 
+    while (it->stop != 1) {
+        pf = prime_iterate(it);
+        ndiv *= pf.exponent + 1; 
+    }
+
+    // Don't forget to deallocate!
+    destroy_prime_factor_iterator(it);
+
+    return ndiv;
+}
+
 
 // Implement the Sieve of Eratosthenes algorithm to generate all primes <= n
 // !! THIS FUNCTION ALLOCATES AN SARRAY !!

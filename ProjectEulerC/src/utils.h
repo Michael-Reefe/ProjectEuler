@@ -53,6 +53,7 @@
     PrimeFactorIterator *initialize_prime_factor_iterator(uint64_t number);
     void destroy_prime_factor_iterator(PrimeFactorIterator *it);
     PrimeFactor prime_iterate(PrimeFactorIterator *it);
+    u64 ndivisors(u64 num);
 
     // "SArrays" -- sized arrays which hold a length value
     #define ARRAY_TYPES(X) \
@@ -68,24 +69,44 @@
         X(f64)
 
     #define GEN_SIZED_ARRAY(type)           \
-        typedef struct _SizeArray_##type {  \
+        typedef struct _SArray_##type {     \
             type*  arr;                     \
             size_t length;                  \
         } SArray_##type;
     ARRAY_TYPES(GEN_SIZED_ARRAY)
+
+    #define GEN_SIZED_ARRAY2D(type)         \
+        typedef struct _SArray2D_##type {   \
+            type** arr;                     \
+            size_t len1;                    \
+            size_t len2;                    \
+        } SArray2D_##type;
+    ARRAY_TYPES(GEN_SIZED_ARRAY2D)
 
     // Functions for SArrays
     #define __GEN_SARRAY_INIT(type) \
         SArray_##type* init_SArray_##type(size_t length);
     ARRAY_TYPES(__GEN_SARRAY_INIT)
 
+    #define __GEN_SARRAY2D_INIT(type) \
+        SArray2D_##type* init_SArray2D_##type(size_t len1, size_t len2);
+    ARRAY_TYPES(__GEN_SARRAY2D_INIT)
+
     #define __GEN_SARRAY_RESIZE(type) \
         void resize_SArray_##type(SArray_##type *sarray, size_t new_length);
     ARRAY_TYPES(__GEN_SARRAY_RESIZE)
 
+    #define __GEN_SARRAY2D_RESIZE(type) \
+        void resize_SArray2D_##type(SArray2D_##type *s2d, size_t new_len1, size_t new_len2);
+    ARRAY_TYPES(__GEN_SARRAY2D_RESIZE)
+
     #define __GEN_SARRAY_DEST(type) \
         void free_SArray_##type(SArray_##type *sarray); 
     ARRAY_TYPES(__GEN_SARRAY_DEST)
+
+    #define __GEN_SARRAY2D_DEST(type) \
+        void free_SArray2D_##type(SArray2D_##type *s2d); 
+    ARRAY_TYPES(__GEN_SARRAY2D_DEST)
 
     // Prime sieve functions
     SArray_u64* sieve_of_eratosthenes(u64 n);
@@ -112,12 +133,60 @@
         }                                       \
         s; })                                   
 
+    // with lower/upper limits (EXCLUSIVE upper limit)
+    #define i_sum_lim(arr, len, imin, imax) ({  \
+        i64 s = 0;                              \
+        for (u32 i = imin; i < imax; ++i) {     \
+            s += (i64)arr[i];                   \
+        }                                       \
+        s; })
+
     #define f_sum(arr, len) ({                  \
         f64 s = 0;                              \
         for (u32 i = 0; i < len; ++i) {         \
             s += (f64)arr[i];                   \
         }                                       \
         s; })                                   
+    
+    // with lower/upper limits (EXCLUSIVE upper limit)
+    #define f_sum_lim(arr, len, imin, imax) ({  \
+        f64 s = 0;                              \
+        for (u32 i = imin; i < imax; ++i) {     \
+            s += (f64)arr[i];                   \
+        }                                       \
+        s; })
+
+
+    // integer and float products
+    #define i_prod(arr, len) ({                 \
+        i64 p = 1;                              \
+        for (u32 i = 0; i < len; ++i) {         \
+            p *= (i64)arr[i];                   \
+        }                                       \
+        p; })
+
+    // with lower/upper limits (EXCLUSIVE upper limit)
+    #define i_prod_lim(arr, len, imin, imax) ({ \
+        i64 p = 1;                              \
+        for (u32 i = imin; i < imax; ++i) {     \
+            p *= (i64)arr[i];                   \
+        }                                       \
+        p; })
+
+    #define f_prod(arr, len) ({                 \
+        f64 p = 1;                              \
+        for (u32 i = 0; i < len; ++i) {         \
+            p *= (f64)arr[i];                   \
+        }                                       \
+        p; })
+
+    // with lower/upper limits (EXCLUSIVE upper limit)
+    #define f_prod_lim(arr, len, imin, imax) ({ \
+        f64 p = 1;                              \
+        for (u32 i = imin; i < imax; ++i) {     \
+            p *= (f64)arr[i];                   \
+        }                                       \
+        p; })
 
 
 #endif // PROJECTEULERC_UTILS

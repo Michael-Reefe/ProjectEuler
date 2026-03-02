@@ -10,7 +10,7 @@ SRC_DIR=./
 BIN_DIR=../bin
 
 # find all .c source files (except utility files)
-SRC_FILES=$(filter-out $(SRC_DIR)/lists.c $(SRC_DIR)/utils.c, $(wildcard $(SRC_DIR)/*.c))
+SRC_FILES=$(filter-out $(SRC_DIR)/lists.c $(SRC_DIR)/bigint.c $(SRC_DIR)/utils.c, $(wildcard $(SRC_DIR)/*.c))
 # convert src/*.c -> bin/*.exe
 BIN_FILES=$(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.exe, $(SRC_FILES))
 
@@ -18,12 +18,12 @@ BIN_FILES=$(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.exe, $(SRC_FILES))
 all: $(BIN_FILES)
 
 # Debug compile
-debug: CCDEBUG = -fsanitize=address
+debug: CCDEBUG = -g -fsanitize=address
 debug: all
 
 # Compile rules
 $(BIN_DIR)/%.exe : $(SRC_DIR)/%.c | $(BIN_DIR)
-	$(CC) $(CCFLAGS) $(CCDEBUG) $^ utils.c lists.c -o $@ $(LIBS)
+	$(CC) $(CCFLAGS) $(CCDEBUG) $^ utils.c lists.c bigint.c -o $@ $(LIBS)
 	chmod +x $@
 
 # Create the bin directory if it doesn't exist
