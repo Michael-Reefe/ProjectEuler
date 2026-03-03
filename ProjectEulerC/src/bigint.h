@@ -7,8 +7,8 @@
 #include <string.h>
 #include "utils.h"
 
-#define WORD_TYPE u32
-#define TEMP_TYPE u64
+#define WORD_TYPE   u32
+#define TEMP_TYPE   u64
 #define WORD_SIZE sizeof(WORD_TYPE)
 #define TEMP_SIZE sizeof(TEMP_TYPE)
 #define WORD_MAX ((TEMP_TYPE)0xFFFFFFFF)
@@ -28,8 +28,8 @@ enum {
 BigInt* bigint_init(size_t nwords);
 void    bigint_copy(BigInt *src, BigInt *dst);
 void    bigint_set_zero(BigInt *bi);
-void    bigint_set_int(BigInt *bi, u64 num);
-BigInt* bigint_from_int(u64 num);
+void    bigint_set_int(BigInt *bi, TEMP_TYPE num);
+BigInt* bigint_from_int(TEMP_TYPE num);
 u64     bigint_to_int(BigInt *bi);
 void    bigint_set_string(BigInt *bi, char *str);
 BigInt* bigint_from_string(char *str);

@@ -138,66 +138,97 @@ void bigint_set_string(BigInt *bi, char *str) {
     bigint_set_zero(bi);
     
     // store a few bigints for doing math
-    u8 digit;
+    u32 digit;
     size_t ndigits = strlen(str);  // note: strlen does NOT include the null terminator
     size_t len     = bi->length;
-    BigInt *bten   = bigint_init(len);
+    BigInt *bttt9  = bigint_init(len);
     BigInt *bdigit = bigint_init(len);
-    bigint_set_int(bten, 10);
+    bigint_set_int(bttt9, 1000000000);  // 10^9
+    char *pstr = str;  // copy so we dont modify the input pointer
+    char *str_end;
+    // 10-character buffer for string parsing
+    char pbuf[10];
+    pbuf[9] = '\0';
 
-    for (size_t nd = 0; nd < ndigits; ++nd) {
-        digit = (*(str++)-'0');
-        bigint_set_int(bdigit, (TEMP_TYPE)digit);   // bdigit = digit;
-        bigint_imul(bi, bten);                      // bi *= 10;
-        bigint_iadd(bi, bdigit);                    // bi += bdigit;
+    // Do the first chunk, which may be < 9
+    size_t nfirst = ndigits % 9;
+    if (nfirst == 0) nfirst = 9;
+    memcpy(pbuf, pstr, nfirst);
+    digit = strtoul(pbuf, &str_end, 10);
+    bigint_set_int(bdigit, digit);          // bdigit = digit;
+    bigint_iadd(bi, bdigit);                // bi += bdigit;
+    pstr += nfirst;
+
+    // do the rest in chunks of 10^9 to speed up the read-in time
+    while (*pstr) {
+        memcpy(pbuf, pstr, 9);
+        digit = strtoul(pbuf, &str_end, 10);
+        bigint_set_int(bdigit, (TEMP_TYPE)digit);       // bdigit = digit;
+        bigint_imul(bi, bttt9);                         // bi *= 10^9;
+        bigint_iadd(bi, bdigit);                        // bi += bdigit;   (something < 10^9)
+        pstr += 9;
     }
 
-    bigint_free(bten);
+    bigint_free(bttt9);
     bigint_free(bdigit);
 }
 
 char* bigint_to_string(BigInt *b) {
     assert(b != NULL);
 
+    // edge case
+    if (bigint_iszero(b)) {
+        char *str = malloc(2);
+        str = "0\0";
+        return str;
+    }
+
     // calculate how long of a string we need
-    size_t nbytes = ceil(b->length*8*WORD_SIZE*log10(2)) + 1;
+    size_t cap = b->length*2 + 1;
+    size_t nchunks = 0;
+    WORD_TYPE *chunks = malloc(cap*WORD_SIZE);
 
-    // initialize a string
-    char *str = (char*)malloc(nbytes);
-    assert(str != NULL);
-
+    // helper numbers
     size_t len = b->length;
+    WORD_TYPE rem;
     BigInt *bi      = bigint_init(len);
-    BigInt *bten    = bigint_init(len);
+    BigInt *bttt9   = bigint_init(len);
     BigInt *brem    = bigint_init(len);
     BigInt *next_bi = bigint_init(len);
-    bigint_set_int(bten, 10);
+    bigint_set_int(bttt9, 1000000000);   // 10^9
     bigint_copy(b, bi);
 
-    // repeat division by 10, using the remainder as a decimal digit.
-    // this will build a string with digits in reverse order.
-    size_t pos = 0;
+    // repeat division by 10^9, using the remainder as a decimal digit.
     while (!(bigint_iszero(bi))) {
-        bigint_divmod(bi, bten, next_bi, brem);
-        assert(pos < nbytes-1);
-        str[pos++] = '0' + brem->data[0];  // (remainder is guaranteed to be 0-9)
+        bigint_divmod(bi, bttt9, next_bi, brem);
+        rem = bigint_to_int(brem);
+        chunks[nchunks++] = rem;
         bigint_copy(next_bi, bi);
     }
-    if (pos == 0) str[pos++] = '0';  // edge case
 
-    // reverse digits in-place
-    for (size_t i = 0; i < pos/2; ++i) {
-        char t = str[i];
-        str[i] = str[pos-1-i];
-        str[pos-1-i] = t;
+    // initialize a string
+    size_t nbytes = ceil(b->length*8*WORD_SIZE*log10(2)) + 1;
+    char *str  = (char*)malloc(nbytes);
+    assert(str != NULL);
+    char *pstr = str;
+
+    // most significant chunk (variable length)
+    i32 nwritten = sprintf(pstr, "%u", chunks[nchunks-1]);
+    pstr += nwritten;
+
+    // remaining chunks
+    i32 i = nchunks - 1;
+    while (i-- > 0) {
+        nwritten = sprintf(pstr, "%09u", chunks[i]);
+        pstr += nwritten;
     }
-    // null terminator
-    str[pos] = '\0';
+    *pstr = '\0';
 
     bigint_free(next_bi);
-    bigint_free(bten);
+    bigint_free(bttt9);
     bigint_free(brem);
     bigint_free(bi);
+    free(chunks);
 
     return str;
 }
