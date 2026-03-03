@@ -7,12 +7,16 @@
 #include <string.h>
 #include "utils.h"
 
-#define WORD_SIZE 4
-#define WORD_MAX_VAL ((u64)0xFFFFFFFF)
+#define WORD_TYPE u32
+#define TEMP_TYPE u64
+#define WORD_SIZE sizeof(WORD_TYPE)
+#define TEMP_SIZE sizeof(TEMP_TYPE)
+#define WORD_MAX ((TEMP_TYPE)0xFFFFFFFF)
 
 // BigInt structs are an arbitrarily sized array of u32s
 typedef struct _BigInt {
-    SArray_u32 *data;
+    u32     *data;
+    size_t length;
 } BigInt;
 
 enum {
@@ -21,8 +25,7 @@ enum {
     LARGER  =  1,
 };
 
-BigInt* bigint_init(size_t nbytes);
-void    bigint_resize(BigInt *bi, size_t new_nbytes);
+BigInt* bigint_init(size_t nwords);
 void    bigint_copy(BigInt *src, BigInt *dst);
 void    bigint_set_zero(BigInt *bi);
 void    bigint_set_int(BigInt *bi, u64 num);
@@ -45,6 +48,7 @@ void    bigint_idiv(BigInt *dividend, BigInt *divisor);
 void    bigint_mod(BigInt *dividend, BigInt *divisor, BigInt *remainder);
 void    bigint_imod(BigInt *dividend, BigInt *divisor);
 i8      bigint_compare(BigInt *in1, BigInt *in2);
+bool    bigint_iszero(BigInt *bi);
 void    bigint_free(BigInt *bi);
 
 #endif // BIGINT_H

@@ -3,70 +3,67 @@
 
 // private helper functions
 
-static inline bool bit_check(u32 number, u32 n) {
-    return (number >> n) & (u32)1;
+static inline bool bit_check(WORD_TYPE number, WORD_TYPE n) {
+    return (number >> n) & (WORD_TYPE)1;
 }
 
-static inline u32 bit_set(u32 number, u32 n, bool bit) {
-    return (number & ~((u32)1 << n)) | ((u32)bit << n);
+static inline WORD_TYPE bit_set(WORD_TYPE number, WORD_TYPE n, bool bit) {
+    return (number & ~((WORD_TYPE)1 << n)) | ((WORD_TYPE)bit << n);
 }
 
 // left-shift the words in a bigint by nwords
-static void _lshift_word(BigInt *bi, u32 nwords) {
+static void _lshift_word(BigInt *bi, u16 nwords) {
     assert(bi != NULL);
-    for (i32 i = bi->data->length-1; i >= 0; --i) {
+    for (i32 i = bi->length-1; i >= 0; --i) {
         if (i >= nwords) 
-            bi->data->arr[i] = bi->data->arr[i - nwords];
+            bi->data[i] = bi->data[i - nwords];
         else 
-            bi->data->arr[i] = 0;  // zero-pad shifted words
+            bi->data[i] = 0;  // zero-pad shifted words
     }
 }
 
 // left-shift everything by 1 bit
 static void _lshift_1bit(BigInt *bi) {
     assert(bi != NULL);
-    for (size_t i = bi->data->length-1; i > 0; --i) {
-        bi->data->arr[i] = (bi->data->arr[i] << 1) | (bi->data->arr[i-1] >> ((32) - 1));
+    for (size_t i = bi->length-1; i > 0; --i) {
+        bi->data[i] = (bi->data[i] << 1) | (bi->data[i-1] >> ((32) - 1));
     }
-    bi->data->arr[0] <<= 1;
+    bi->data[0] <<= 1;
 }
 
 // // right-shift the words in a bigint by nwords
-// static void _rshift_word(BigInt *bi, u32 nwords) {
+// static void _rshift_word(BigInt *bi, u16 nwords) {
 //     assert(bi != NULL);
-//     for (i32 i = 0; i < bi->data->length; ++i) {
-//         if (i < bi->data->length - nwords) 
-//             bi->data->arr[i] = bi->data->arr[i + nwords];
+//     for (i32 i = 0; i < bi->length; ++i) {
+//         if (i < bi->length - nwords) 
+//             bi->data[i] = bi->data[i + nwords];
 //         else
-//             bi->data->arr[i] = 0;  // zero-pad shifted words
+//             bi->data[i] = 0;  // zero-pad shifted words
 //     }
 // }
 
 // // right-shift everything by 1 bit
 // static void _rshift_1bit(BigInt *bi) {
 //     assert(bi != NULL);
-//     for (size_t i = 0; i < bi->data->length-1; ++i) {
-//         bi->data->arr[i] = (bi->data->arr[i] >> 1) | (bi->data->arr[i+1] << ((32) - 1));
+//     for (size_t i = 0; i < bi->length-1; ++i) {
+//         bi->data[i] = (bi->data[i] >> 1) | (bi->data[i+1] << ((32) - 1));
 //     }
-//     bi->data->arr[bi->data->length-1] >>= 1;
+//     bi->data[bi->length-1] >>= 1;
 // }
 
 
+// BIGINT
+
 // Initializer function
-BigInt* bigint_init(size_t nbytes) {
+BigInt* bigint_init(size_t nwords) {
     BigInt *bi = (BigInt*)malloc(sizeof(BigInt));
     assert(bi != NULL);
-    SArray_u32 *data = init_SArray_u32(nbytes/4);  // one u32 is 4 bytes
+    WORD_TYPE *data = (WORD_TYPE*)malloc(nwords*WORD_SIZE);
     // initialize all zeros in the array
     bi->data = data;
+    bi->length = nwords;
     bigint_set_zero(bi);
     return bi;
-}
-
-// Resize function
-void bigint_resize(BigInt *bi, size_t new_nbytes) {
-    assert(bi != NULL);
-    resize_SArray_u32(bi->data, new_nbytes/4);
 }
 
 // copy a bigint from src to dst
@@ -75,38 +72,46 @@ void bigint_copy(BigInt *src, BigInt *dst) {
     assert(dst != NULL);
     // zero the output buffer
     bigint_set_zero(dst);
-    size_t minlen = min(src->data->length, dst->data->length);
-    for (size_t i = 0; i < minlen; ++i) dst->data->arr[i] = src->data->arr[i];
+    size_t minlen = min(src->length, dst->length);
+    for (size_t i = 0; i < minlen; ++i) dst->data[i] = src->data[i];
 }
 
 void bigint_set_zero(BigInt *bi) {
-    for (size_t i = 0; i < bi->data->length; ++i) bi->data->arr[i] = 0;
+    for (size_t i = 0; i < bi->length; ++i) bi->data[i] = 0;
 }
 
 // Initialize from an integer
-BigInt* bigint_from_int(u64 num) {
-    // initialize with 8 bytes so we can safely store a u64
-    BigInt *bi = bigint_init(8);  
+BigInt* bigint_from_int(TEMP_TYPE num) {
+    // this size calculation equates to 2 with the default settings, since
+    // a u64 takes twice as many bytes as a u32
+    BigInt *bi = bigint_init(TEMP_SIZE/WORD_SIZE);
     bigint_set_int(bi, num);
     return bi;
 }
 
 // Set to an integer (limited to u64 values)
-void bigint_set_int(BigInt *bi, u64 num) {
+void bigint_set_int(BigInt *bi, TEMP_TYPE num) {
     assert(bi != NULL);
-    assert(bi->data->length >= 2);
-    // split into lower 4 bytes and upper 4 bytes
-    bi->data->arr[0] = num;             // lower bytes (the "end" of the number, assuming little-endian)
-    bi->data->arr[1] = (num >> 32);     // upper bytes (the "beginning" of the number, assuming little-endian)
-    for (size_t i = 2; i < bi->data->length; ++i) {
-        bi->data->arr[i] = 0;
+    assert(bi->length >= TEMP_SIZE/WORD_SIZE);
+    // split into lower bytes and upper bytes
+    for (size_t i = 0; i < bi->length; ++i) {
+        if (i*WORD_SIZE < TEMP_SIZE)
+            bi->data[i] = (num >> 8*WORD_SIZE*i);    // shift right by i word sizes 
+        else
+            bi->data[i] = 0;
     }
 }
 
 // Convert to an integer
-u64 bigint_to_int(BigInt *bi) {
+TEMP_TYPE bigint_to_int(BigInt *bi) {
     assert(bi != NULL);
-    u64 out = bi->data->arr[0];  // we will lose data if bi is larger than 64 bits :(
+    // we will lose data if bi is larger than 64 bits :(
+    // but we can at least get the last N words by copying their bits
+    TEMP_TYPE out = 0;
+    for (size_t i = 0; i < bi->length; ++i) {
+        if (i*WORD_SIZE < TEMP_SIZE)
+            out |= (bi->data[i] << 8*WORD_SIZE*i);   // shift left by i word sizes
+    }
     return out;
 }
 
@@ -115,9 +120,9 @@ BigInt* bigint_from_string(char *str) {
     assert(str != NULL);
 
     // calculate how many bytes we need to store this int (minimum 8)
-    size_t nbytes = ceil((strlen(str)/log10(2))/8) + 4;
-    nbytes = max(nbytes, 8);
-    BigInt *bout = bigint_init(nbytes);
+    size_t nbytes = ceil((strlen(str)/log10(2))/8) + WORD_SIZE;
+    nbytes = max(nbytes, TEMP_SIZE);
+    BigInt *bout = bigint_init(nbytes/WORD_SIZE);
 
     // set it with the in-place function
     bigint_set_string(bout, str);
@@ -133,16 +138,16 @@ void bigint_set_string(BigInt *bi, char *str) {
     bigint_set_zero(bi);
     
     // store a few bigints for doing math
-    u32 digit;
-    size_t ndigits = strlen(str);
-    size_t nbytes  = bi->data->length*4;
-    BigInt *bten   = bigint_init(nbytes);
-    BigInt *bdigit = bigint_init(nbytes);
+    u8 digit;
+    size_t ndigits = strlen(str);  // note: strlen does NOT include the null terminator
+    size_t len     = bi->length;
+    BigInt *bten   = bigint_init(len);
+    BigInt *bdigit = bigint_init(len);
     bigint_set_int(bten, 10);
 
     for (size_t nd = 0; nd < ndigits; ++nd) {
         digit = (*(str++)-'0');
-        bigint_set_int(bdigit, digit);              // bdigit = digit;
+        bigint_set_int(bdigit, (TEMP_TYPE)digit);   // bdigit = digit;
         bigint_imul(bi, bten);                      // bi *= 10;
         bigint_iadd(bi, bdigit);                    // bi += bdigit;
     }
@@ -155,30 +160,27 @@ char* bigint_to_string(BigInt *b) {
     assert(b != NULL);
 
     // calculate how long of a string we need
-    size_t nbytes = ceil(b->data->length*32*log10(2)) + 1;
+    size_t nbytes = ceil(b->length*8*WORD_SIZE*log10(2)) + 1;
 
-    // initialize a string of zeros
+    // initialize a string
     char *str = (char*)malloc(nbytes);
     assert(str != NULL);
-    // for (i64 si = 0; si < nbytes; ++si) str[si] = '0';
-    // str[nbytes-1] = 0;
 
-    BigInt *bi      = bigint_init(b->data->length*4);
-    BigInt *bzero   = bigint_init(b->data->length*4);
-    BigInt *bten    = bigint_init(b->data->length*4);
-    BigInt *brem    = bigint_init(b->data->length*4);
-    BigInt *next_bi = bigint_init(b->data->length*4);
-    bigint_set_zero(bzero);
+    size_t len = b->length;
+    BigInt *bi      = bigint_init(len);
+    BigInt *bten    = bigint_init(len);
+    BigInt *brem    = bigint_init(len);
+    BigInt *next_bi = bigint_init(len);
     bigint_set_int(bten, 10);
     bigint_copy(b, bi);
 
     // repeat division by 10, using the remainder as a decimal digit.
     // this will build a string with digits in reverse order.
     size_t pos = 0;
-    while (bigint_compare(bi, bzero) != EQUAL) {
+    while (!(bigint_iszero(bi))) {
         bigint_divmod(bi, bten, next_bi, brem);
         assert(pos < nbytes-1);
-        str[pos++] = '0' + brem->data->arr[0];  // (remainder is guaranteed to be 0-9)
+        str[pos++] = '0' + brem->data[0];  // (remainder is guaranteed to be 0-9)
         bigint_copy(next_bi, bi);
     }
     if (pos == 0) str[pos++] = '0';  // edge case
@@ -190,10 +192,9 @@ char* bigint_to_string(BigInt *b) {
         str[pos-1-i] = t;
     }
     // null terminator
-    str[pos] = 0;
+    str[pos] = '\0';
 
     bigint_free(next_bi);
-    bigint_free(bzero);
     bigint_free(bten);
     bigint_free(brem);
     bigint_free(bi);
@@ -204,15 +205,15 @@ char* bigint_to_string(BigInt *b) {
 // Increment a BigInt by 1
 void bigint_inc(BigInt *bi) {
     assert(bi != NULL);
-    u32 res;
-    u64 temp;
+    WORD_TYPE res;
+    TEMP_TYPE temp;
 
     // this is a loop in case "res" overflows and needs
     // to carry over into the next word
-    for (size_t i = 0; i < bi->data->length; ++i) {
-        temp = bi->data->arr[i];
-        res  = temp + 1;
-        bi->data->arr[i] = res;
+    for (size_t i = 0; i < bi->length; ++i) {
+        temp = (TEMP_TYPE)bi->data[i];
+        res  = (WORD_TYPE)(temp + 1);
+        bi->data[i] = res;
         if (res > temp) break;
     }
 }
@@ -220,14 +221,14 @@ void bigint_inc(BigInt *bi) {
 // Decrement a BigInt by 1
 void bigint_dec(BigInt *bi) {
     assert(bi != NULL);
-    u32 res, temp;
+    WORD_TYPE res, temp;
 
     // this is a loop in case "res" underflows and needs
     // to borrow from the next word
-    for (size_t i = 0; i < bi->data->length; ++i) {
-        temp = bi->data->arr[i];
+    for (size_t i = 0; i < bi->length; ++i) {
+        temp = bi->data[i];
         res  = temp - 1;
-        bi->data->arr[i] = res;
+        bi->data[i] = res;
         if (!(res > temp)) break;
     }
 }
@@ -240,34 +241,41 @@ static void _bigint_add_internal(BigInt *a, BigInt *b, BigInt *c) {
     assert(c != NULL);
 
     // zero the output buffer
-    bigint_set_zero(c);
+    if (!(bigint_iszero(c))) bigint_set_zero(c);
 
     // longest length of both inputs and the output
-    size_t maxlen = max(c->data->length, max(a->data->length, b->data->length));
+    size_t maxlen = max(c->length, max(a->length, b->length));
 
-    u32 carry = 0;
-    u32 d1, d2;
-    u64 temp;
+    WORD_TYPE carry = 0;
+    WORD_TYPE d1, d2;
+    TEMP_TYPE temp;
     // Loop through "words" (elements of "data") from least significant (end) to most (0)
     for (size_t i = 0; i < maxlen; ++i) {
         d1 = 0;
         d2 = 0;
-        if (i < a->data->length) d1 = a->data->arr[i];
-        if (i < b->data->length) d2 = b->data->arr[i];
-        temp = (u64) d1 + d2 + carry;
-        if (i < c->data->length) c->data->arr[i] = (temp & WORD_MAX_VAL);    // bitwise and works like a modulo here (but it's faster)
-        carry = (temp > WORD_MAX_VAL);
+        if (i < a->length) d1 = a->data[i];
+        if (i < b->length) d2 = b->data[i];
+        temp = (TEMP_TYPE)d1 + d2 + carry;
+        if (i < c->length) {
+            c->data[i] = (temp & WORD_MAX);    // bitwise and works like a modulo here (but it's faster)
+        } else if ((temp & WORD_MAX) != 0) {
+            printf("ERROR (_bigint_add_internal) | Output buffer is not large enough to hold the result!");
+            exit(1);
+        }
+        carry = (temp > WORD_MAX);
     }
 }
 
+// Wrappers for the public functions
 void bigint_add(BigInt *a, BigInt *b, BigInt *c) {
     _bigint_add_internal(a, b, c);
 }
 
+// in-place version
 void bigint_iadd(BigInt *a, BigInt *b) {
     // temporary output buffer
     assert(a != NULL);
-    BigInt *temp = bigint_init(a->data->length*4);
+    BigInt *temp = bigint_init(a->length);
     _bigint_add_internal(a, b, temp);
     // copy temp into a
     bigint_copy(temp, a);
@@ -282,22 +290,27 @@ static void _bigint_sub_internal(BigInt *a, BigInt *b, BigInt *c) {
     assert(c != NULL);
 
     // zero the output buffer
-    bigint_set_zero(c);
+    if (!(bigint_iszero(c))) bigint_set_zero(c);
 
     // longest length of both inputs and the output
-    size_t maxlen = max(c->data->length, max(a->data->length, b->data->length));
+    size_t maxlen = max(c->length, max(a->length, b->length));
 
-    u32 borrow = 0;
-    u64 temp1, temp2, tempr;
+    WORD_TYPE borrow = 0;
+    TEMP_TYPE temp1, temp2, tempr;
     // Loop through "words" (elements of "data") from least significant (end) to most (0)
     for (size_t i = 0; i < maxlen; ++i) {
-        temp1 = (u64)0 + (u64)WORD_MAX_VAL + 1;
-        temp2 = (u64)0 + borrow;
-        if (i < a->data->length) temp1 = (u64)a->data->arr[i] + (WORD_MAX_VAL + 1);  // add WORD_MAX_VAL to allow subtraction with uints
-        if (i < b->data->length) temp2 = (u64)b->data->arr[i] + borrow;
+        temp1 = (TEMP_TYPE)WORD_MAX + 1;
+        temp2 = (TEMP_TYPE)borrow;
+        if (i < a->length) temp1 = (TEMP_TYPE)a->data[i] + (WORD_MAX + 1);  // add WORD_MAX to allow subtraction with uints
+        if (i < b->length) temp2 = (TEMP_TYPE)b->data[i] + borrow;
         tempr = (temp1 - temp2);
-        if (i < c->data->length) c->data->arr[i] = (u32)(tempr & WORD_MAX_VAL);    // bitwise and works like a modulo here (but it's faster)
-        borrow = (tempr <= WORD_MAX_VAL);
+        if (i < c->length) {
+            c->data[i] = (WORD_TYPE)(tempr & WORD_MAX);    // bitwise and works like a modulo here (but it's faster)
+        } else if ((WORD_TYPE)(tempr & WORD_MAX) != 0) {
+            printf("ERROR (_bigint_sub_internal) | Output buffer is not large enough to store the result!");
+            exit(1);
+        }
+        borrow = (tempr <= WORD_MAX);
     }
 }
 
@@ -308,7 +321,7 @@ void bigint_sub(BigInt *a, BigInt *b, BigInt *c) {
 void bigint_isub(BigInt *a, BigInt *b) {
     // temporary output buffer
     assert(a != NULL);
-    BigInt *temp = bigint_init(a->data->length*4);
+    BigInt *temp = bigint_init(a->length);
     _bigint_sub_internal(a, b, temp);
     // copy temp into a
     bigint_copy(temp, a);
@@ -324,15 +337,15 @@ void _bigint_mul_internal(BigInt *a, BigInt *b, BigInt *c) {
     assert(c != NULL);
 
     // zero the output buffer
-    bigint_set_zero(c);
+    if (!(bigint_iszero(c))) bigint_set_zero(c);
 
     // longest length of both inputs and the output
-    size_t maxlen = max(c->data->length, max(a->data->length, b->data->length));
+    size_t maxlen = max(c->length, max(a->length, b->length));
 
-    BigInt *bi_row  = bigint_init(maxlen*4); 
-    BigInt *bi_temp = bigint_init(maxlen*4);
-    u32 d1, d2;
-    u64 temp;
+    BigInt *bi_row  = bigint_init(maxlen); 
+    BigInt *bi_temp = bigint_init(maxlen);
+    WORD_TYPE d1, d2;
+    TEMP_TYPE temp;
 
     // just do the simple multiplication algorithm where we go through each digit
     for (size_t i = 0; i < maxlen; ++i) {
@@ -341,9 +354,9 @@ void _bigint_mul_internal(BigInt *a, BigInt *b, BigInt *c) {
         for (size_t j = 0; j < maxlen; ++j) {
             d1 = 0;
             d2 = 0;
-            if (i < a->data->length) d1 = a->data->arr[i];
-            if (j < b->data->length) d2 = b->data->arr[j]; 
-            temp = (u64)d1 * (u64)d2;
+            if (i < a->length) d1 = a->data[i];
+            if (j < b->length) d2 = b->data[j]; 
+            temp = (TEMP_TYPE)d1 * d2;
             bigint_set_int(bi_temp, temp);        // create temporary bigint for this individual word mult
             _lshift_word(bi_temp, i+j);           // left shift by i+j words to align for the addition
             bigint_iadd(bi_row, bi_temp);         // bi_row += bi_temp;
@@ -364,7 +377,7 @@ void bigint_mul(BigInt *a, BigInt *b, BigInt *c) {
 void bigint_imul(BigInt *a, BigInt *b) {
     // temporary output buffer
     assert(a != NULL);
-    BigInt *temp = bigint_init(a->data->length*4);
+    BigInt *temp = bigint_init(a->length);
     _bigint_mul_internal(a, b, temp);
     // copy temp into a
     bigint_copy(temp, a);
@@ -380,24 +393,24 @@ void bigint_divmod(BigInt *dividend, BigInt *divisor, BigInt *quotient, BigInt *
     assert(remainder != NULL);
 
     // zero the output buffers
-    bigint_set_zero(quotient);
-    bigint_set_zero(remainder);
+    if (!(bigint_iszero(quotient)))  bigint_set_zero(quotient);
+    if (!(bigint_iszero(remainder))) bigint_set_zero(remainder);
 
     // longest length of both inputs and the output
-    size_t maxlen = dividend->data->length;
+    size_t maxlen = dividend->length;
 
     for (i32 wordn = maxlen-1; wordn >= 0; --wordn) {
         for (i32 bitn = 31; bitn >= 0; --bitn) {
             _lshift_1bit(remainder);                // remainder <<= 1;
             // set the 0th bit of remainder to the ith bit of dividend
             // check the value of the ith bit of dividend
-            bool bit = bit_check(dividend->data->arr[wordn], bitn);
+            bool bit = bit_check(dividend->data[wordn], bitn);
             // set it to the 0th bit of remainder
-            remainder->data->arr[0] = bit_set(remainder->data->arr[0], 0, bit);
+            remainder->data[0] = bit_set(remainder->data[0], 0, bit);
             if (bigint_compare(remainder, divisor) != SMALLER) {        // if (remainder >= divisor)
                 bigint_isub(remainder, divisor);                        // remainder -= divisor;
                 // set the ith bit of quotient to 1
-                quotient->data->arr[wordn] = bit_set(quotient->data->arr[wordn], bitn, 1);
+                quotient->data[wordn] = bit_set(quotient->data[wordn], bitn, 1);
             }
         }
     }
@@ -406,7 +419,7 @@ void bigint_divmod(BigInt *dividend, BigInt *divisor, BigInt *quotient, BigInt *
 // do divmod and throw away the remainder
 static void _bigint_div_internal(BigInt *dividend, BigInt *divisor, BigInt *quotient) {
     assert(quotient  != NULL);
-    BigInt *remainder = bigint_init(quotient->data->length*4);
+    BigInt *remainder = bigint_init(quotient->length);
     bigint_divmod(dividend, divisor, quotient, remainder);
     bigint_free(remainder);
 }
@@ -418,7 +431,7 @@ void bigint_div(BigInt *dividend, BigInt *divisor, BigInt *quotient) {
 void bigint_idiv(BigInt *dividend, BigInt *divisor) {
     // temporary output buffer
     assert(dividend != NULL);
-    BigInt *temp = bigint_init(dividend->data->length*4);
+    BigInt *temp = bigint_init(dividend->length);
     _bigint_div_internal(dividend, divisor, temp);
     // copy temp into dividend
     bigint_copy(temp, dividend);
@@ -429,7 +442,7 @@ void bigint_idiv(BigInt *dividend, BigInt *divisor) {
 // do divmod and throw away the quotient
 static void _bigint_mod_internal(BigInt *dividend, BigInt *divisor, BigInt *remainder) {
     assert(remainder  != NULL);
-    BigInt *quotient = bigint_init(remainder->data->length*4);
+    BigInt *quotient = bigint_init(remainder->length);
     bigint_divmod(dividend, divisor, quotient, remainder);
     bigint_free(quotient);
 }
@@ -441,7 +454,7 @@ void bigint_mod(BigInt *dividend, BigInt *divisor, BigInt *remainder) {
 void bigint_imod(BigInt *dividend, BigInt *divisor) {
     // temporary output buffer
     assert(dividend != NULL);
-    BigInt *temp = bigint_init(dividend->data->length*4);
+    BigInt *temp = bigint_init(dividend->length);
     _bigint_mod_internal(dividend, divisor, temp);
     // copy temp into dividend
     bigint_copy(temp, dividend);
@@ -451,23 +464,30 @@ void bigint_imod(BigInt *dividend, BigInt *divisor) {
 
 // compare two bigints
 i8 bigint_compare(BigInt *in1, BigInt *in2) {
-    size_t i = max(in1->data->length, in2->data->length);
+    size_t i = max(in1->length, in2->length);
     while (i != 0) {
         --i;
-        if ((i >= in1->data->length) && (i <  in2->data->length) && (in2->data->arr[i] > 0))
+        if ((i >= in1->length) && (i <  in2->length) && (in2->data[i] > 0))
             return SMALLER;
-        else if ((i <  in1->data->length) && (i >= in2->data->length) && (in1->data->arr[i] > 0))
+        else if ((i <  in1->length) && (i >= in2->length) && (in1->data[i] > 0))
             return LARGER;
-        else if ((i <  in1->data->length) && (i <  in2->data->length) && (in1->data->arr[i] > in2->data->arr[i]))
+        else if ((i <  in1->length) && (i <  in2->length) && (in1->data[i] > in2->data[i]))
             return LARGER;
-        else if ((i <  in1->data->length) && (i <  in2->data->length) && (in1->data->arr[i] < in2->data->arr[i]))
+        else if ((i <  in1->length) && (i <  in2->length) && (in1->data[i] < in2->data[i]))
             return SMALLER;
     }
     return EQUAL;
 }
 
+bool bigint_iszero(BigInt *bi) {
+    bool iszero = true;
+    for (size_t i = 0; i < bi->length; ++i) 
+        iszero = iszero && (bi->data[i] == 0);
+    return iszero;
+}
+
 // Destructor function
 void bigint_free(BigInt *bi) {
-    free_SArray_u32(bi->data);
+    free(bi->data);
     free(bi);
 }
