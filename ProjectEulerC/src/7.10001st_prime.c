@@ -47,7 +47,9 @@ int main() {
     // Don't forget to free our memory
     free_SArray_u64(primes);
 
-    printf("Answer: %lu\n", prime);
+    printf("Answer        : %lu\n", prime);
+    printf("Correct Answer: %lu\n", 104743UL);
+    printf("\n");
 
     return 0;
 }

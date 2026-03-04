@@ -28,7 +28,9 @@ int main() {
         ++i;
     }
 
-    printf("Answer: %lu\n", tnum);
+    printf("Answer        : %lu\n", tnum);
+    printf("Correct Answer: %lu\n", 76576500UL);
+    printf("\n");
 
     return 0;
 }

@@ -77,7 +77,9 @@ int main() {
     // free memory
     free_SArray2D_u8(s2d);
 
-    printf("Answer: %u\n", maxprod);
+    printf("Answer        : %u\n", maxprod);
+    printf("Correct Answer: %u\n", 70600674);
+    printf("\n");
 
     return 0;
 }

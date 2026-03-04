@@ -36,7 +36,9 @@ int main() {
     i32 lcmout = 1;
     for (i32 i = 1; i <= 20; i++) lcmout = lcm(lcmout, i);
 
-    printf("Answer: %d\n", lcmout);
+    printf("Answer        : %d\n", lcmout);
+    printf("Correct Answer: %d\n", 232792560);
+    printf("\n");
     
     return 0;
 }

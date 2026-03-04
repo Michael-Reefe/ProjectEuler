@@ -27,7 +27,8 @@ int main() {
     }
 
     // Output the result
-    printf("Answer: %d\n", fib_sum);
+    printf("Answer        : %d\n", fib_sum);
+    printf("Correct Answer: %d\n", 4613732);
     printf("\n");
 
     return 0;

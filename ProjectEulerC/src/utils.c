@@ -220,7 +220,8 @@ SArray_u64* sieve_of_eratosthenes(u64 n) {
     }
 
     // now, allocate an array to hold all of the primes found
-    size_t nprimes = (size_t)i_sum(primemask, n+1);
+    size_t nprimes = 0;
+    for (u64 i = 0; i < n+1; ++i) nprimes += (size_t)primemask[i];
     SArray_u64 *primes = init_SArray_u64(nprimes);
 
     u32 j = 0;
@@ -260,7 +261,8 @@ void segmented_sieve_step(u64 n, u64 chunksize, SArray_u64 *primes) {
     }
 
     // how many new primes did we find?
-    size_t n_newprimes = (size_t)i_sum(primemask, chunksize);
+    size_t n_newprimes = 0;
+    for (u64 i = 0; i < chunksize; ++i) n_newprimes += (size_t)primemask[i];
 
     // reallocate the primes array to hold the new elements
     resize_SArray_u64(primes, n_primes + n_newprimes);

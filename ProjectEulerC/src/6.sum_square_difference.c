@@ -18,7 +18,9 @@ int main() {
 
     i32 sum_diff = square_of_sum - sum_of_squares;
 
-    printf("Answer: %d\n", sum_diff);
+    printf("Answer        : %d\n", sum_diff);
+    printf("Correct Answer: %d\n", 25164150);
+    printf("\n");
     
     return 0;
 }

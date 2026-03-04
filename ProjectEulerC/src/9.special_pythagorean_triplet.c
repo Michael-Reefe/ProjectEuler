@@ -25,12 +25,15 @@ int main() {
        set an upper limit on the search range for n and m
        of 1000. */
     i8 found = 0;
+    i64 s;
     SArray_i32 *triplet = init_SArray_i32(3);
     for (i32 i = 1; i <= 1000; ++i) {
         if (found) break;
         for (i32 j = i+1; j <= 1000; ++j) {
             pythagorean_triplet(i, j, triplet);
-            if (i_sum(triplet->arr, triplet->length) == 1000) {
+            // sum of the triplet
+            s = triplet->arr[0] + triplet->arr[1] + triplet->arr[2];
+            if (s == 1000) {
                 found = 1;
                 break;
             }
@@ -38,12 +41,14 @@ int main() {
     }
     
     // Now that we have the triplet, we must find the product of the array
-    i64 abc = i_prod(triplet->arr, triplet->length);
+    i64 abc = triplet->arr[0] * triplet->arr[1] * triplet->arr[2];
 
     // Dont forget to free memory
     free_SArray_i32(triplet);
 
-    printf("Answer: %ld\n", abc);
+    printf("Answer        : %ld\n", abc);
+    printf("Correct Answer: %ld\n", 31875000L);
+    printf("\n");
     
     return 0;
 }

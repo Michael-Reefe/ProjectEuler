@@ -15,12 +15,15 @@ int main() {
     
     u64 n = 2000000;
     SArray_u64 *primes = sieve_of_eratosthenes(n);
-    i64 psum = i_sum(primes->arr, primes->length);
+    i64 psum = 0;
+    for (i64 i = 0; i < primes->length; ++i) psum += primes->arr[i];
 
     // Dont forget to free!
     free_SArray_u64(primes);
 
-    printf("Answer: %ld\n", psum);
+    printf("Answer        : %ld\n", psum);
+    printf("Correct Answer: %ld\n", 142913828922);
+    printf("\n");
     
     return 0;
 }

@@ -16,7 +16,8 @@ int main() {
         s += i;
     }
 
-    printf("Answer: %d\n", s);
+    printf("Answer        : %d\n", s);
+    printf("Correct Answer: %d\n", 233168);
     printf("\n");
 
     return 0;

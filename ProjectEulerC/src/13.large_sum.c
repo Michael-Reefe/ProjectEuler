@@ -42,7 +42,9 @@ int main() {
     char *bigsum_str = bigint_to_string(bigsum);
 
     // print only the first 10 characters
-    printf("Answer: %*.*s\n", 10, 10, bigsum_str);
+    printf("Answer        : %*.*s\n", 10, 10, bigsum_str);
+    printf("Correct Answer: %lu\n", 5537376230);
+    printf("\n");
 
     // release memory
     free(bigsum_str);

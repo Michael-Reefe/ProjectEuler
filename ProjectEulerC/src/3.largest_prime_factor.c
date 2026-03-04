@@ -25,7 +25,8 @@ int main() {
     destroy_prime_factor_iterator(it);
 
     // Output the result
-    printf("Answer: %lu\n", lpf);
+    printf("Answer        : %lu\n", lpf);
+    printf("Correct Answer: %lu\n", 6857UL);
     printf("\n");
 
     return 0;

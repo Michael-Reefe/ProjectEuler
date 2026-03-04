@@ -44,7 +44,9 @@ int main() {
         }
     }
 
-    printf("Answer: %u\n", maxnum);
+    printf("Answer        : %u\n", maxnum);
+    printf("Correct Answer: %u\n", 837799);
+    printf("\n");
 
     return 0;
 }

@@ -46,7 +46,9 @@ int main() {
         if (testprod > maxprod) maxprod = testprod;
     }
 
-    printf("Answer: %lu\n", maxprod);
+    printf("Answer        : %lu\n", maxprod);
+    printf("Correct Answer: %lu\n", 23514624000);
+    printf("\n");
 
     return 0;
 }

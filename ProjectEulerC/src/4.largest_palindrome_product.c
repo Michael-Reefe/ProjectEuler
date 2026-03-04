@@ -54,7 +54,10 @@ int main() {
         }
     }
 
-    printf("Answer: %d\n", gpp);
+    printf("Answer        : %d\n", gpp);
+    printf("Correct Answer: %d\n", 906609);
+    printf("\n");
+
 
     return 0;
 }

@@ -2,7 +2,7 @@
 
 # Compiler and options (use C17 standard)
 CC      = gcc
-CCFLAGS = -O3 -std=c17 -Wall -Werror
+CCFLAGS = -O3 -std=c17 -Wall -Werror -Wpedantic
 CCDEBUG = 
 LIBS    = -lm
 
