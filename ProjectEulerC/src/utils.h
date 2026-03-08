@@ -112,6 +112,8 @@
     SArray_u64* sieve_of_eratosthenes(u64 n);
     void segmented_sieve_step(u64 n, u64 chunksize, SArray_u64 *primes);
 
+    u64 binomial(u64 n, u64 k);
+
     // Simple math macros
 
     // max and min
