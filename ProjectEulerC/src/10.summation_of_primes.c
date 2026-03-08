@@ -1,6 +1,6 @@
 #include "utils.h"
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 10: Summation of Primes\n");

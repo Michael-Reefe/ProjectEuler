@@ -1,7 +1,7 @@
 #include <string.h>
 #include "utils.h"
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 11: Largest Product in a Grid\n");

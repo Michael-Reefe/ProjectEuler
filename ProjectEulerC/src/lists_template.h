@@ -38,7 +38,7 @@ typedef struct _LIST_NAME {
 } LIST_NAME;
 
 // Linked List constructor function
-LIST_NAME *CONCAT(create_linked_list, LL_TAG)() {
+LIST_NAME *CONCAT(create_linked_list, LL_TAG)(void) {
     LIST_NAME *list = (LIST_NAME*)malloc(sizeof(LIST_NAME));
     assert(list);
     list->length = 0;

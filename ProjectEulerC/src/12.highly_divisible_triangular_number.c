@@ -1,6 +1,6 @@
 #include "utils.h"
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 12: Highly Divisible Triangular Number\n");

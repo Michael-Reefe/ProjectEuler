@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 1: Multiples of 3 or 5    \n");

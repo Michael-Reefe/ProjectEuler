@@ -13,7 +13,7 @@ void pythagorean_triplet(i32 n, i32 m, SArray_i32* triplet) {
     }
 }
     
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 9: Special Pythagorean Triplet\n");

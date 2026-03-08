@@ -16,7 +16,7 @@ u32 collatz(u32 n) {
     return col;
 }
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 14: Largest Collatz Sequence\n");

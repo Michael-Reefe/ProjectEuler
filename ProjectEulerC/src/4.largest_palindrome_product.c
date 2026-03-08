@@ -29,7 +29,7 @@ i8 is_palindrome(i32 number) {
 }
 
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 4: Largest Palindrome Product\n");

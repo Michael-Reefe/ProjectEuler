@@ -1,7 +1,7 @@
 #include "utils.h"
 #include "bigint.h"
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 13: Large Sum             \n");

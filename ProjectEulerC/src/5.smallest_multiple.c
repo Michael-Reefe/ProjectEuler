@@ -23,7 +23,7 @@ i32 lcm(i32 a, i32 b) {
     return abs(a) / gcd(a, b) * abs(b);
 }
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 5: Smallest Multiple      \n");

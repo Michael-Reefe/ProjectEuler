@@ -277,3 +277,20 @@ void segmented_sieve_step(u64 n, u64 chunksize, SArray_u64 *primes) {
         }
     }
 }
+
+// Calculate the binomial coefficient "n choose k"
+u64 binomial(u64 n, u64 k) {
+
+    // To avoid overflowing, we don't want to calculate large factorials out
+    // of the gate.  We can instead use a formula that factors out
+    // the factors that appear in both the numerator and denominator.
+    u64 choose = 1;
+    u64 m;
+    for (u64 i = 1; i <= k; ++i) {
+        m = (n + 1 - i) / i;
+        assert(UINT64_MAX/m < choose);  // still check for overflows, just in case
+        choose *= m;
+    }
+
+    return choose;
+}

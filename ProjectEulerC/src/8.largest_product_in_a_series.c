@@ -1,6 +1,6 @@
 #include "utils.h"
 
-int main() {
+int main(void) {
 
     printf("----------------------------------\n");
     printf("Problem 8: Largest Product in a Series\n");

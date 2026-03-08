@@ -23,7 +23,7 @@
 LINKEDLIST_TYPES(GEN_STRUCTS)
 
 // Constructor for linked lists of all types
-#define GEN_CREATE_LIST(type, tag) LinkedList_##tag *create_linked_list_##tag();
+#define GEN_CREATE_LIST(type, tag) LinkedList_##tag *create_linked_list_##tag(void);
 LINKEDLIST_TYPES(GEN_CREATE_LIST)
 
 // Constructors for nodes of all types
