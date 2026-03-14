@@ -15,6 +15,9 @@ struct PrimeFactorize{T<:Integer}
     n::T
 end
 
+# Define the PrimeFactorize iterator to have a "SizeUnknown" size 
+Base.IteratorSize(::Type{<:PrimeFactorize}) = Base.SizeUnknown()
+
 # This defines an iterator such that if we do, for example:
 # "for (primefactors, exponents) in PrimeFactorize(number)"...
 # we will get an iterator over the prime factors and exponents for number
@@ -147,6 +150,10 @@ function sumdivisors(number::Integer)
     prod(x->(x[1]^(x[2]+1)-1)÷(x[1]-1), PrimeFactorize(number); init=1)
 end
 
+# Quick boolean function to check if a number is prime 
+function isprime(number::Integer)
+    PrimeFactorize(number) |> collect |> length |> isone
+end
 
 # A function to compute all divisors of a number (including 1 and itself), using 
 # its prime factorization. Note that the output will NOT be sorted in any particular
