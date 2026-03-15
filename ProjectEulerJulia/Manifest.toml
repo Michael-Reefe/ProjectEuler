@@ -2,7 +2,7 @@
 
 julia_version = "1.12.5"
 manifest_format = "2.0"
-project_hash = "4a357c7aaa62e7fc9ebbd5a0e47d25f6647f2623"
+project_hash = "05ae51d75064c092bc7422c47b62394b556cdc06"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -108,7 +108,7 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 version = "1.11.0"
 
 [[deps.ProjectEulerJulia]]
-deps = ["BenchmarkTools", "Combinatorics", "DelimitedFiles"]
+deps = ["BenchmarkTools", "Combinatorics", "DelimitedFiles", "Printf"]
 path = "."
 uuid = "341a74a3-f005-4af2-b722-6de6fb470d18"
 version = "0.1.0"

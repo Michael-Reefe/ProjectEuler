@@ -7,9 +7,11 @@ authors = ["Michael-Reefe <michael.reefe8@gmail.com>"]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 BenchmarkTools = "1.6.0"
 DelimitedFiles = "1.9.1"
+LinearAlgebra = "1.12.0"
 Printf = "1.11.0"
