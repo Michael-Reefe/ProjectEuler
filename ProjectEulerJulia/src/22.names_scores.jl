@@ -12,12 +12,7 @@ function euler22()
     sort!(names)
 
     # Calculate the name scores and sum them up
-    total = 0
-    for i in eachindex(names)
-        total += calculate_name_score(names[i], i)
-    end
-
-    return total
+    sum(i->calculate_name_score(names[i], i), eachindex(names))
 end
 
 

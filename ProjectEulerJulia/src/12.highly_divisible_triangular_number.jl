@@ -11,7 +11,7 @@ function euler12(ndiv_target::Integer=500)
         # check how many factors this triangular number has by
         # checking the divisors of i and i+1 instead of checking
         # for tnum itself (which can get large)
-        if i % 2 == 0 
+        if iseven(i)
             ndiv_tmp = ndivisors(i+1)
             ndiv = ndivisors(i÷2)*ndiv_tmp
         else

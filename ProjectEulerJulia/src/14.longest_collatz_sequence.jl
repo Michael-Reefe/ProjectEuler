@@ -19,7 +19,7 @@ function collatz(n::Integer)
     end
 
     # if not, define it recursively
-    if n % 2 == 0
+    if iseven(n)
         collatz_lengths[n] = 1 + collatz(n÷2)
     else
         collatz_lengths[n] = 2 + collatz((3n+1)÷2)

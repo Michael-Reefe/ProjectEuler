@@ -11,37 +11,24 @@ function euler23()
     #    have a sumdivisors function in utils.jl.  We just need to subtract the number 
     #    itself to make sure we only include the *proper* divisors. 
     n_limit = 28123
-    abundant_numbers = zeros(Int, n_limit)
-    j = 1
-    for i in 1:n_limit
-        if sumdivisors(i)-i > i 
-            abundant_numbers[j] = i
-            j += 1
-        end
-    end
-    abundant_numbers = abundant_numbers[1:j-1]
-    n_abun = length(abundant_numbers)
+    abundant_numbers = filter(i -> sumdivisors(i)-i > i, 1:n_limit)
 
-    # 2. The second task is to concatenate a list of all possible UNIQUE sums of pairs of 
-    #    abundant numbers less than the limit (28123)
-    abundant_sums = zeros(Int, n_abun*(n_abun-1)÷2+n_abun)
-    i = 1
+    # 2. The second task is to generate a list of all possible UNIQUE sums of pairs of 
+    #    abundant numbers less than the limit (28123).
+    #    We do this by making a boolean vector that tells whether each integer from 1-28123
+    #    is a sum of two abundant numbers.
+    abundant_sum_mask = falses(n_limit)
     for n1 in eachindex(abundant_numbers)
         for n2 in n1:length(abundant_numbers)
             sumi = abundant_numbers[n1] + abundant_numbers[n2]
             if sumi ≤ n_limit
-                abundant_sums[i] = sumi
-                i += 1
+                abundant_sum_mask[sumi] = true
             end
         end
     end
-    unique!(abundant_sums)
 
-    # 3. Finally, to make the final step faster than just doing a loop through each number 
-    #    and checking if it's in the list, we can instead just get the sum of ALL numbers 
-    #    below the limit (28123), and the SUBTRACT each number in abundant_sums that is less 
-    #    than the limit.
-    nonabundant_sum = sum(1:n_limit) - sum(abundant_sums)
+    # 3. Finally, we sum up all of the integers that are NOT the sum of abundant numbers
+    nonabundant_sum = sum((1:n_limit)[.~abundant_sum_mask])
 
     return nonabundant_sum
 end

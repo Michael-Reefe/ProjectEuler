@@ -5,30 +5,11 @@ function euler8(window_size::Integer=13)
     # and store our big number as a string
     bignum = read(joinpath(@__DIR__, "..", "data", "8.bignumber.dat"), String)
 
-    # Now all we have to do is scan through "bignum" with
-    # a window size of 13 characters and find the largest 
-    # product of the digits
-    maxprod = 0
-    for i ∈ 1:length(bignum)-window_size+1
-        # read in 13 digits from bignumber and multiply them
-        testprod = 1
-        @inbounds for j ∈ i:i+window_size-1
-            testprod *= parse(Int, bignum[j])
-        end
-        # check if this is larger than the largest previously
-        # found product
-        if testprod > maxprod
-            maxprod = testprod
-        end
-    end
-
-    # alt version for functional girlies:
-    # maximum(
-    #     i->mapreduce(s->parse(Int, s), *, @view bignum[i:i+window_size-1]),
-    #     1:length(bignum)-window_size+1
-    # )
-
-    maxprod
+    # now this is where I show off how sexy Julia can be:
+    maximum(
+        i->mapreduce(s->parse(Int, s), *, @view bignum[i:i+window_size-1]),
+        1:length(bignum)-window_size+1
+    )
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
