@@ -1,17 +1,31 @@
 function euler21(limit::Integer=10^4)
+    sum(filter(is_amicable, 1:limit-1))
+end
 
-    amicable_sum = 0
-    # loop over all numbers < limit
-    for i in 1:limit-1
-        # by definition, amicable numbers must have sum(proper_divisors(j)) = i
-        j = sumdivisors(i)-i
-        # if the reverse also holds, then these must be amicable numbers
-        if (j > i) && sumdivisors(j)-j == i
-            amicable_sum += i + j
-        end
+# hash table to store amicable number calculations
+const amicable_numbers = Dict{Int, Bool}()
+
+# function to check if a number is amicable, saving 
+# also the results for its amicable pair to save future 
+# computation time
+function is_amicable(n::Integer)
+    global amicable_numbers
+
+    if haskey(amicable_numbers, n)
+        return amicable_numbers[n]
     end
-
-    amicable_sum
+    m = sumdivisors(n) - n 
+    if (m ≠ n) && sumdivisors(m) - m == n
+        amicable_numbers[n] = true 
+        amicable_numbers[m] = true
+    else
+        amicable_numbers[n] = false
+    end
+    # special case 
+    if isone(n)
+        amicable_numbers[n] = false 
+    end
+    return amicable_numbers[n]
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__

@@ -29,20 +29,7 @@ function euler26(maxd::Int=1000)
         return n_recur
     end
 
-    # store the running value of the fraction with the longest recurrent decimal representation
-    longest_d = 0
-    longest_recur = 0
-    # loop through values of d up to 1000
-    for d in 2:maxd
-        # if the current pattern is the longest found so far, save it
-        n_recur = get_decimal_n_recur(d)
-        if n_recur > longest_recur
-            longest_d = d
-            longest_recur = n_recur 
-        end
-    end
-
-    return longest_d
+    argmax(d -> get_decimal_n_recur(d), 2:maxd)
 end
 
 
