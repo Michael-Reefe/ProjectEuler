@@ -1,4 +1,3 @@
-
 function euler28(size::Int=1001)
 
     @assert isodd(size) "size must be odd!"

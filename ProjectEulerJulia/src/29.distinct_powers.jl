@@ -1,4 +1,3 @@
-
 function euler29(maxd::Int=100)
 
     # allocate a buffer for holding a^b values

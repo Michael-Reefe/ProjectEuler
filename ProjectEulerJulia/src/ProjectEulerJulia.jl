@@ -38,16 +38,17 @@ include("26.reciprocal_cycles.jl")
 include("27.quadratic_primes.jl")
 include("28.number_spiral_diagonals.jl")
 include("29.distinct_powers.jl")
+include("30.digit_fifth_powers.jl")
 
 # Export functions
-n = 29
+n = 30
 export julia_main, runall,
        euler1,   euler2,   euler3,   euler4,   euler5,
        euler6,   euler7,   euler8,   euler9,   euler10,
        euler11,  euler12,  euler13,  euler14,  euler15,
        euler16,  euler17,  euler18,  euler19,  euler20,
        euler21,  euler22,  euler23,  euler24,  euler25,
-       euler26,  euler27,  euler28,  euler29
+       euler26,  euler27,  euler28,  euler29,  euler30
 
 # Define the "main" function to run everything
 # (this is set up for usage with PackageCompiler.jl
